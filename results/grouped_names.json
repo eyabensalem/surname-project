@@ -1,0 +1,17 @@
+[
+  {
+    "group_id": 1,
+    "variants": ["Mitailler", "Mitaillier"],
+    "origin_ids": ["O39"]
+  },
+  {
+    "group_id": 2,
+    "variants": ["Schwartzberg", "Schwarzberg", "Schwarzenberg"],
+    "origin_ids": ["O40"]
+  },
+  {
+    "group_id": 3,
+    "variants": ["Henri", "Jehen"],
+    "origin_ids": ["O41"]
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "group_id": 1,
+    "variants": [
+      "Mitailler",
+      "Mitaillier"
+    ],
+    "origin_ids": [
+      "O39"
+    ],
+    "summary": "Porté dans le Morbihan et la Loire-Atlantique, le nom s’est aussi écrit Mitailler. Il semble désigner celui qui travaille le métal (ancien français “mitaille”, le “metaillier” étant celui qui vend ou travaille les métaux)."
+  },
+  {
+    "group_id": 2,
+    "variants": [
+      "Schwartzberg",
+      "Schwarzberg",
+      "Schwarzenberg"
+    ],
+    "origin_ids": [
+      "O40"
+    ],
+    "summary": "Il désigne en principe celui qui est originaire d’une localité ainsi appelée (toponyme très fréquent sous diverses formes). A noter cependant que la plupart des noms cités ci-dessus sont souvent portés par des Juifs askhénazes, sans faire forcément référence à un lieu précis."
+  },
+  {
+    "group_id": 3,
+    "variants": [
+      "Henri",
+      "Jehen"
+    ],
+    "origin_ids": [
+      "O41"
+    ],
+    "summary": "Dans le Nord-Pas-de-Calais, ce nom est un diminutif correspondant au prénom Henri (éventuellement à Jean, sous sa forme Jehan, Jehen). En Bretagne (56), où on trouve aussi la forme Le Henno, c’est le diminutif de Le Hen, qui signifie le vieux, peut-être aussi l’aîné."
+  }
+]
