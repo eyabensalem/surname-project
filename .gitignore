@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Environment files
+.env
+.env.*
+
+# Model and ML caches
+.cache/
+hf_home/
+huggingface/
+
+# Generated data outputs
+data/structured_dataset.csv
+data/structured_dataset.json
+data/cleaned_dataset.json
+data/name_groups.json
+data/final_dataset.json
+
+# Logs
+*.log
