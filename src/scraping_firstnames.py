@@ -56,9 +56,20 @@ def fetch_page(url: str, timeout: int = 15) -> str:
 def clean_text(text: str) -> str:
     """Normalize extracted text."""
     text = re.sub(r"\s+", " ", text).strip()
+
+    # remove common UI noise
+    text = text.replace("Expand Links ", "")
+    text = text.replace("Expand Links", "")
+
+    # fix spaces before punctuation
+    text = text.replace(" .", ".")
+    text = text.replace(" ,", ",")
+    text = text.replace(" :", ":")
+    text = text.replace(" ;", ";")
+    text = text.replace("( ", "(")
+    text = text.replace(" )", ")")
+
     return text
-
-
 def extract_meaning_history(soup: BeautifulSoup) -> str:
     """
     Extract the 'Meaning & History' section as best as possible.
