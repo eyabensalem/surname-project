@@ -24,11 +24,10 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.text_rank import TextRankSummarizer
 from transformers import pipeline
+from config import MERGED_GROUPS_FILE, MODEL_COMPARISON_FILE
 
-
-RESULTS_DIR = Path("results")
-INPUT_FILE = RESULTS_DIR / "merged_groups.json"
-OUTPUT_FILE = RESULTS_DIR / "model_comparison.json"
+INPUT_FILE = MERGED_GROUPS_FILE
+OUTPUT_FILE = MODEL_COMPARISON_FILE
 
 IMPORTANT_KEYWORDS = [
     "signifie",

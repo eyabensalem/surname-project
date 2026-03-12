@@ -1,214 +1,342 @@
-# Surname Project
+# 🧬 Name Origins NLP Project
 
-## Project Overview
+### Analyse automatique des origines de noms et prénoms avec NLP
 
-This project analyzes surname variants and their origins using Natural Language Processing (NLP).
+## 📌 Aperçu du projet
 
-The objective is to group surname variants, merge their origin descriptions, and generate automatic summaries.
+Ce projet applique des techniques de **Natural Language Processing (NLP)** pour analyser des noms de famille et prénoms et en extraire automatiquement :
 
-The project is divided into two main contributions:
+* leurs **origines**
+* leurs **significations**
+* leurs **variantes**
+* des **résumés automatiques**
 
-- **Yasmine**: detection and grouping of surname variants
-- **Eya**: text merging, automatic summarization, model comparison, and first-name scraping extension
+Le pipeline inclut également :
 
----
+* la **comparaison de modèles de résumé**
+* l’**évaluation des résultats**
+* des **visualisations**
+* une **application interactive Streamlit**
 
-# Project Pipeline
-
-The processing pipeline follows these steps:
-
-1. Load surname variants grouped by similarity
-2. Retrieve corresponding origin texts
-3. Merge texts for each group
-4. Generate summaries using several NLP approaches
-5. Compare summarization models
-6. Extend the pipeline to scraped first-name data
+L’objectif est de construire un **pipeline NLP complet**, allant du traitement des données jusqu’à une interface utilisateur.
 
 ---
 
-# NLP Methods Used
+# 🎯 Objectifs du projet
 
-Three summarization approaches were tested:
+Ce projet vise à :
 
-### 1. TF-IDF Extractive Summarization
-- Sentence scoring based on TF-IDF
-- Additional weighting using domain keywords
-
-Advantages:
-- Fast
-- Interpretable
-- Lightweight
-
----
-
-### 2. TextRank Summarization
-Graph-based ranking algorithm for sentence extraction.
-
-Advantages:
-- Classical NLP approach
-- Does not require training data
+* regrouper automatiquement les **variantes de noms**
+* générer des **résumés automatiques**
+* comparer plusieurs **modèles NLP**
+* évaluer la **qualité des résumés**
+* extraire les **origines des prénoms**
+* visualiser les **relations entre variantes**
+* construire une **application interactive**
 
 ---
 
-### 3. Transformer Model (BART / DistilBART)
+# 🧠 Pipeline NLP
 
-A pretrained Transformer model used for abstractive summarization.
-
-Advantages:
-- Produces more natural summaries
-- Can rephrase text instead of simply extracting sentences
-
----
-
-# First-Name Scraping Extension
-
-To demonstrate that the pipeline works on external data, we extended the project using web scraping.
-
-Data was collected from:
-
-https://originenom.com
-
-The scraping process includes:
-
-1. Extracting a list of first names
-2. Visiting each first-name page
-3. Extracting:
-   - origin
-   - meaning
-   - description
-4. Applying the same summarization pipeline
-
----
-
-# Project Structure
+Le projet suit le pipeline suivant :
 
 ```
-
-surname-project/
-│
-├── data/
-│   └── origins.json
-│
-├── results/
-│   ├── grouped_names.json
-│   ├── merged_groups.json
-│   ├── group_summaries.json
-│   ├── firstnames_list.json
-│   ├── firstnames_dataset.json
-│   └── model_comparison.json
-│
-├── src/
-│   ├── text_grouping.py
-│   ├── summarization.py
-│   ├── scrape_firstname_list.py
-│   ├── scrape_firstname_details.py
-│   └── compare_summarizers.py
-│
-├── notebooks/
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
-
-````
+Dataset noms
+     ↓
+Nettoyage et regroupement des variantes
+     ↓
+Fusion des groupes
+     ↓
+Résumé automatique (Transformers)
+     ↓
+Comparaison des modèles
+     ↓
+Évaluation
+     ↓
+Visualisation
+     ↓
+Application Streamlit
+```
 
 ---
 
-# Installation
+# 🧩 Structure du projet
 
-### 1 Create a virtual environment
+```
+surname-project
+│
+├── data
+│   └── origins.json
+│
+├── results
+│   ├── merged_groups.json
+│   ├── group_summaries.json
+│   ├── model_comparison.json
+│   ├── evaluation_results.json
+│   ├── surname_variant_graph.png
+│   ├── model_scores.png
+│   ├── firstnames_dataset.json
+│   └── firstnames_summaries.json
+│
+├── src
+│   ├── config.py
+│   ├── text_grouping.py
+│   ├── summarization.py
+│   ├── compare_summarizers.py
+│   ├── evaluate_summaries.py
+│   ├── visualize_variants.py
+│   ├── plot_model_scores.py
+│   ├── scrape_firstname_list.py
+│   ├── scrape_firstname_details.py
+│   ├── summarize_firstnames.py
+│   └── run_all.py
+│
+├── app
+│   └── streamlit_app.py
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Installation
+
+## 1️⃣ Cloner le projet
+
+```bash
+git clone https://github.com/eyabensalem/surname-project
+cd name-origins-nlp
+```
+
+---
+
+## 2️⃣ Créer un environnement virtuel
 
 ```bash
 python -m venv venv
-````
+```
 
-### 2 Activate the environment
+Activer l'environnement :
 
-Windows:
+Windows :
 
-```bash
+```
 venv\Scripts\activate
 ```
 
-Mac/Linux:
+Linux / Mac :
 
-```bash
+```
 source venv/bin/activate
 ```
 
-### 3 Install dependencies
+---
 
-```bash
+## 3️⃣ Installer les dépendances
+
+```
 pip install -r requirements.txt
 ```
 
 ---
 
-# How to Run
+# 🚀 Exécution du pipeline complet
 
-### 1 Merge origin texts
+Le pipeline peut être exécuté avec :
 
-```bash
-python src/text_grouping.py
+```
+python src/run_all.py
 ```
 
-### 2 Generate summaries
+Ce script exécute automatiquement :
 
-```bash
-python src/summarization.py
+1️⃣ regroupement des variantes
+2️⃣ génération des résumés
+3️⃣ comparaison des modèles
+4️⃣ évaluation
+5️⃣ génération des visualisations
+6️⃣ scraping des prénoms
+7️⃣ résumé des prénoms
+
+Les résultats sont sauvegardés dans :
+
 ```
-
-### 3 Scrape first-name list
-
-```bash
-python src/scrape_firstname_list.py
+results/
 ```
-
-### 4 Scrape first-name details
-
-```bash
-python src/scrape_firstname_details.py
-```
-
-### 5 Compare summarization models
-
-```bash
-python src/compare_summarizers.py
-```
-## Model comparison
-
-Three summarization approaches were compared:
-
-- **TF-IDF + keyword scoring**: the main method used in the final pipeline
-- **TextRank**: a classical graph-based extractive summarization method
-- **BART / DistilBART**: a Transformer-based abstractive summarization model
-
-### Observations
-- TF-IDF produced the most stable and interpretable results on surname origin texts.
-- TextRank provided relevant summaries but was sometimes less focused.
-- BART generated more natural text in some cases, but could truncate or distort specialized information on short inputs.
-
-For this reason, the final pipeline uses **TF-IDF + keyword scoring** as the main summarization approach.
----
-
-# Output Files
-
-| File                      | Description                             |
-| ------------------------- | --------------------------------------- |
-| `merged_groups.json`      | merged origin texts                     |
-| `group_summaries.json`    | summaries generated with TF-IDF         |
-| `firstnames_list.json`    | scraped list of first names             |
-| `firstnames_dataset.json` | structured scraped dataset              |
-| `model_comparison.json`   | comparison between summarization models |
 
 ---
 
-# Conclusion
+# 🤖 Modèles NLP utilisés
 
-This project demonstrates how NLP techniques can be used to analyze surname origins and automatically generate summaries.
+Le projet utilise des modèles **Transformers (HuggingFace)** pour générer les résumés.
 
-The approach was extended to external web data to demonstrate the robustness and generalization of the pipeline.
+Exemples de modèles testés :
 
-````
+* BART
+* T5
+* DistilBART
+
+Ces modèles permettent de transformer automatiquement des descriptions longues en résumés courts.
 
 ---
+
+# 📊 Visualisations
+
+Deux visualisations principales sont générées.
+
+## Graphe des variantes de noms
+
+Ce graphe montre les relations entre les variantes d’un même nom.
+
+
+
+```
+![Surname](results/surname_variant_graph.png)
+```
+
+---
+
+## Comparaison des modèles
+
+Ce graphique compare les performances des différents modèles de résumé.
+
+
+```
+![Model_score](results/model_scores.png)
+```
+
+---
+
+# 🔎 Extraction des prénoms
+
+Un scraping est réalisé pour récupérer :
+
+* origine
+* signification
+* description
+
+Puis un résumé automatique est généré.
+
+Exemple :
+
+```json
+{
+  "first_name": "Abel",
+  "origin": "Hébraïque",
+  "meaning": "souffle ou vapeur",
+  "summary": "Le prénom Abel trouve ses origines dans la Bible et possède des racines hébraïques."
+}
+```
+
+---
+
+# 🖥 Application interactive
+
+Une application **Streamlit** permet de rechercher :
+
+* un **nom de famille**
+* un **prénom**
+
+et d'afficher :
+
+* les variantes
+* l'origine
+* le résumé
+* le score de confiance
+
+---
+
+## Lancer l'application
+
+```
+streamlit run app/streamlit_app.py
+```
+
+L'application sera disponible sur :
+
+```
+http://localhost:8501
+```
+
+---
+
+# 📷 Interface de l'application
+
+### Recherche de nom de famille
+
+📷 Capture à ajouter ici
+![Interface](images/app_interface.png)
+
+---
+
+### Recherche de prénom
+
+📷 Capture à ajouter ici
+
+---
+
+### Visualisations
+
+📷 Capture à ajouter ici
+
+---
+
+# 📈 Résultats
+
+Le projet permet :
+
+✔ regroupement automatique des variantes
+✔ génération de résumés automatiques
+✔ extraction d'informations sur les prénoms
+✔ comparaison de modèles NLP
+✔ visualisation des relations entre noms
+✔ application interactive
+
+---
+
+# 🛠 Technologies utilisées
+
+* Python
+* HuggingFace Transformers
+* Streamlit
+* BeautifulSoup
+* NetworkX
+* Matplotlib
+* Requests
+* JSON
+
+---
+
+# 🔮 Améliorations possibles
+
+Améliorations possibles du projet :
+
+* ajouter plus de sources de données
+* améliorer l'extraction des origines
+* utiliser des **embeddings plus avancés**
+* ajouter une **recherche fuzzy**
+* déployer l'application en ligne
+
+---
+
+# 👩‍💻 Auteur
+
+Projet réalisé dans le cadre du **Master Big Data & Intelligence Artificielle**.
+
+---
+
+# ⭐ Remarque
+
+Les résultats dépendent des données disponibles et des modèles utilisés.
+
+Ce projet illustre l'utilisation combinée de :
+
+* **scraping**
+* **NLP**
+* **visualisation**
+* **application interactive**
+
+dans un pipeline complet.
+
+---
+

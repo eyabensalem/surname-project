@@ -22,9 +22,10 @@ from bs4 import BeautifulSoup
 
 
 BASE_LIST_URL = "https://originenom.com/liste-des-prenoms/"
-RESULTS_DIR = Path("results")
-OUTPUT_FILE = RESULTS_DIR / "firstnames_list.json"
 
+from config import FIRSTNAMES_LIST_FILE
+
+OUTPUT_FILE = FIRSTNAMES_LIST_FILE
 
 def save_json(data: Any, file_path: Path) -> None:
     """Save data as formatted JSON."""
@@ -73,7 +74,26 @@ def extract_firstname_links(html: str, base_url: str) -> List[Dict[str, str]]:
 
         if not label:
             continue
+        # Filter very noisy entries
+        if len(label) < 2:
+            continue
 
+        if any(char.isdigit() for char in label):
+            continue
+
+        # ignore extremely long entries
+        if len(label) > 30:
+            continue
+
+        # ignore entries with too many words
+        if len(label.split()) > 3:
+            continue
+        
+        if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]+$", label):
+            continue
+                    # ignore entries that are only separators or too generic
+        if label.lower() in {"origine", "signification", "prenom", "prénoms"}:
+            continue
         full_url = urljoin(base_url, href)
 
         if "/origine-du-prenom/" not in full_url:

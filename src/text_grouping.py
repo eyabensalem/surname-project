@@ -11,13 +11,12 @@ Person 2 pipeline step:
 import json
 from pathlib import Path
 
+from config import ORIGINS_FILE,GROUPED_NAMES_FILE,MERGED_GROUPS_FILE
 
+INPUT_FILE = ORIGINS_FILE
+GROUPED_FILE = GROUPED_NAMES_FILE
+OUTPUT_FILE = MERGED_GROUPS_FILE
 DATA_DIR = Path("data")
-RESULTS_DIR = Path("results")
-
-ORIGINS_FILE = DATA_DIR / "origins.json"
-GROUPED_FILE = RESULTS_DIR / "grouped_names.json"
-OUTPUT_FILE = RESULTS_DIR / "merged_groups.json"
 
 
 def load_json(file_path):

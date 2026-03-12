@@ -14,13 +14,10 @@ from typing import List, Dict, Any, Tuple
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
+from config import MERGED_GROUPS_FILE, GROUP_SUMMARIES_FILE
 
-
-RESULTS_DIR = Path("results")
-
-INPUT_FILE = RESULTS_DIR / "merged_groups.json"
-OUTPUT_FILE = RESULTS_DIR / "group_summaries.json"
-
+INPUT_FILE = MERGED_GROUPS_FILE
+OUTPUT_FILE = GROUP_SUMMARIES_FILE
 
 IMPORTANT_KEYWORDS = [
     "signifie",
@@ -77,7 +74,7 @@ def compute_keyword_score(sentence: str) -> float:
             score += 2.0
 
     if "signifie" in lowered:
-        score += 3.0
+        score += 6.0
 
     if "variantes" in lowered or "variante" in lowered:
         score += 2.5
@@ -85,6 +82,11 @@ def compute_keyword_score(sentence: str) -> float:
     if "désigne" in lowered:
         score += 2.5
 
+    if lowered.startswith("le nom signifie"):
+        score += 4.0
+
+    if "prénom" in lowered:
+        score += 2.0
     return score
 
 
@@ -95,7 +97,7 @@ def compute_tfidf_scores(sentences: List[str]) -> np.ndarray:
     if not sentences:
         return np.array([])
 
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
     matrix = vectorizer.fit_transform(sentences)
     return np.asarray(matrix.sum(axis=1)).ravel()
 
@@ -121,14 +123,37 @@ def rank_sentences(sentences: List[str]) -> List[Tuple[int, float]]:
         keyword_score = compute_keyword_score(sentence)
         hybrid_score = keyword_score + float(normalized_tfidf[idx])
 
+        # bonus for the first sentence
+        if idx == 0:
+            hybrid_score += 1.5
+
+        # bonus for the second sentence
+        if idx == 1:
+            hybrid_score += 0.5
+
         # slight penalty for overly long sentences
         length = max(len(sentence.split()), 1)
         hybrid_score = hybrid_score - (length / 100)
 
         ranked.append((idx, hybrid_score))
-
     return ranked
+def compute_summary_confidence(sentences: List[str], ranked: List[Tuple[int, float]], top_n: int = 2) -> float:
+    """
+    Compute a simple confidence score based on the selected sentence scores.
+    """
+    if not ranked:
+        return 0.0
 
+    best_scores = sorted([score for _, score in ranked], reverse=True)[:top_n]
+
+    if not best_scores:
+        return 0.0
+
+    confidence = sum(best_scores) / len(best_scores)
+
+    # Normalize roughly to a readable range
+    confidence = round(min(confidence / 10, 1.0), 3)
+    return confidence
 
 def summarize_text(text: str, top_n: int = 2) -> str:
     """
@@ -156,14 +181,18 @@ def build_summaries(groups: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     for group in groups:
         merged_text = group.get("merged_text", "")
+        sentences = split_sentences(merged_text)
+        ranked = rank_sentences(sentences)
         summary = summarize_text(merged_text, top_n=2)
         summary = clean_summary_text(summary)
+        confidence = compute_summary_confidence(sentences, ranked, top_n=2)
         summaries.append(
             {
                 "group_id": group.get("group_id"),
                 "variants": group.get("variants", []),
                 "origin_ids": group.get("origin_ids", []),
                 "summary": summary,
+                "confidence_score": confidence,
             }
         )
 

@@ -19,11 +19,12 @@ import requests
 from bs4 import BeautifulSoup
 
 
-RESULTS_DIR = Path("results")
-INPUT_FILE = RESULTS_DIR / "firstnames_list.json"
-OUTPUT_FILE = RESULTS_DIR / "firstnames_dataset.json"
 
 
+from config import FIRSTNAMES_LIST_FILE, FIRSTNAMES_DATASET_FILE
+
+INPUT_FILE = FIRSTNAMES_LIST_FILE
+OUTPUT_FILE = FIRSTNAMES_DATASET_FILE
 def load_json(file_path: Path) -> Any:
     """Load JSON content."""
     with open(file_path, "r", encoding="utf-8") as file:
@@ -114,8 +115,60 @@ def extract_description(blocks: List[str], first_name: str) -> str:
             return block
 
     return candidates[0] if candidates else ""
+def compute_quality_score(origin: str, meaning: str, description: str) -> int:
+    """
+    Compute a simple quality score for a firstname record.
+    """
+    score = 0
 
+    if origin.strip():
+        score += 1
 
+    if meaning.strip():
+        score += 1
+
+    if description.strip() and len(description.strip()) >= 60:
+        score += 1
+
+    return score
+def infer_origin_from_text(text: str) -> str:
+    """
+    Try to infer a normalized origin from free text.
+    """
+    lowered = text.lower()
+
+    origin_patterns = {
+        "Hébraïque": [r"origine[s]?\s+hébra", r"racine[s]?\s+hébra", r"hébreu", r"hébraïque"],
+        "Arabe": [r"origine[s]?\s+arabe", r"racine[s]?\s+arabe", r"\barabe\b"],
+        "Latin": [r"origine[s]?\s+latine?", r"racine[s]?\s+latine?", r"\blatin\b"],
+        "Grecque": [r"origine[s]?\s+grec", r"racine[s]?\s+grec", r"\bgrec\b", r"grecque"],
+        "Biblique": [r"\bbible\b", r"ancien testament", r"biblique"],
+        "Française": [r"origine[s]?\s+fran", r"\bfrançais\b", r"\bfrançaise\b"],
+    }
+
+    for normalized_origin, patterns in origin_patterns.items():
+        for pattern in patterns:
+            if re.search(pattern, lowered):
+                return normalized_origin
+
+    return ""
+def infer_meaning_from_text(text: str) -> str:
+    """
+    Try to infer a meaning from free text using common patterns.
+    """
+    patterns = [
+        r"signifie\s+\"([^\"]+)\"",
+        r"signifie\s+«([^»]+)»",
+        r"signifie\s+“([^”]+)”",
+        r"signifie\s+'([^']+)'",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return clean_text(match.group(1))
+
+    return ""
 def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
     """Parse one first-name detail page."""
     soup = BeautifulSoup(html, "html.parser")
@@ -126,7 +179,17 @@ def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
     origin = extract_field_after_label(blocks, "Origine")
     meaning = extract_field_after_label(blocks, "Signification")
     description = extract_description(blocks, first_name)
+    # Fallback extraction if structured fields are missing or badly extracted
+    if not origin or len(origin.split()) > 8:
+        inferred_origin = infer_origin_from_text(description)
+        if inferred_origin:
+            origin = inferred_origin
 
+    if not meaning:
+        inferred_meaning = infer_meaning_from_text(description)
+        if inferred_meaning:
+            meaning = inferred_meaning
+    quality_score = compute_quality_score(origin, meaning, description)
     return {
         "first_name": first_name,
         "url": url,
@@ -135,8 +198,43 @@ def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
         "origin": origin,
         "meaning": meaning,
         "description": clean_text(description),
+        "quality_score": quality_score,
     }
+def is_valid_firstname_record(record: Dict[str, Any]) -> bool:
+    """
+    Keep only records with enough useful information.
+    Reject generic search-like pages or surname-like entries.
+    """
+    if record.get("error"):
+        return False
 
+    first_name = record.get("first_name", "").strip()
+    title = record.get("title", "").strip().lower()
+    origin = record.get("origin", "").strip()
+    meaning = record.get("meaning", "").strip()
+    description = record.get("description", "").strip().lower()
+
+    if len(first_name) < 2:
+        return False
+
+    # Reject generic search pages with no useful structured info
+    if "recherche - origine nom" in title and not origin and not meaning:
+        return False
+
+    # Reject entries that explicitly say this is a surname
+    if "nom de famille" in description:
+        return False
+
+    # Reject very weak records
+    content_score = sum(bool(x) for x in [origin, meaning, description])
+
+    if content_score == 0:
+        return False
+
+    if len(description) < 60 and not origin and not meaning:
+        return False
+
+    return True
 
 def scrape_firstname_details(firstnames: List[Dict[str, str]], limit: int = 10) -> List[Dict[str, Any]]:
     """
@@ -151,8 +249,12 @@ def scrape_firstname_details(firstnames: List[Dict[str, str]], limit: int = 10) 
         try:
             html = fetch_page(url)
             parsed = parse_name_page(html, first_name, url)
-            results.append(parsed)
-            print(f"OK: {first_name}")
+
+            if is_valid_firstname_record(parsed):
+                results.append(parsed)
+                print(f"OK: {first_name}")
+            else:
+                print(f"SKIPPED: {first_name} (insufficient content)")
         except Exception as error:
             results.append(
                 {

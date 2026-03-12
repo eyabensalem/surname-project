@@ -21,9 +21,11 @@ from bs4 import BeautifulSoup
 
 
 RESULTS_DIR = Path("results")
-OUTPUT_FILE = RESULTS_DIR / "firstnames_dataset.json"
 BASE_URL = "https://originenom.com/origine-du-prenom/"
 
+from config import FIRSTNAMES_DATASET_FILE
+
+OUTPUT_FILE = FIRSTNAMES_DATASET_FILE
 
 def save_json(data: Any, file_path: Path) -> None:
     file_path.parent.mkdir(parents=True, exist_ok=True)
