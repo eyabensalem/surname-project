@@ -190,9 +190,9 @@ Ce graphe montre les relations entre les variantes d’un même nom.
 
 
 
-```
+
 ![Surname](results/surname_variant_graph.png)
-```
+
 
 ---
 
@@ -201,9 +201,8 @@ Ce graphe montre les relations entre les variantes d’un même nom.
 Ce graphique compare les performances des différents modèles de résumé.
 
 
-```
 ![Model_score](results/model_scores.png)
-```
+
 
 ---
 
@@ -342,4 +341,5 @@ Ce projet illustre l'utilisation combinée de :
 dans un pipeline complet.
 
 ---
+
 
