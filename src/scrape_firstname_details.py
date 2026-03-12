@@ -1,12 +1,11 @@
 """
-Scrape first-name information from OrigineNom.
+Scrape first-name detail pages from OrigineNom.
 
-This script:
-- reads a list of first names
-- builds OrigineNom URLs
-- downloads each page
-- extracts origin / meaning / description
-- saves results to JSON
+Step 2 of the first-name extension:
+- load firstnames_list.json
+- visit each first-name page
+- extract structured fields
+- save results to firstnames_dataset.json
 """
 
 from __future__ import annotations
@@ -21,17 +20,25 @@ from bs4 import BeautifulSoup
 
 
 RESULTS_DIR = Path("results")
+INPUT_FILE = RESULTS_DIR / "firstnames_list.json"
 OUTPUT_FILE = RESULTS_DIR / "firstnames_dataset.json"
-BASE_URL = "https://originenom.com/origine-du-prenom/"
+
+
+def load_json(file_path: Path) -> Any:
+    """Load JSON content."""
+    with open(file_path, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def save_json(data: Any, file_path: Path) -> None:
+    """Save JSON content."""
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
 
 
 def clean_text(text: str) -> str:
+    """Normalize extracted text."""
     text = re.sub(r"\s+", " ", text).strip()
     text = text.replace(" .", ".")
     text = text.replace(" ,", ",")
@@ -43,6 +50,7 @@ def clean_text(text: str) -> str:
 
 
 def fetch_page(url: str, timeout: int = 15) -> str:
+    """Download page HTML."""
     response = requests.get(
         url,
         timeout=timeout,
@@ -59,9 +67,10 @@ def fetch_page(url: str, timeout: int = 15) -> str:
 
 
 def extract_text_blocks(soup: BeautifulSoup) -> List[str]:
+    """Extract visible text blocks."""
     blocks: List[str] = []
 
-    for tag in soup.find_all(["p", "li", "h2", "h3"]):
+    for tag in soup.find_all(["p", "li", "h2", "h3", "strong"]):
         text = tag.get_text(" ", strip=True)
         text = clean_text(text)
         if text:
@@ -72,8 +81,9 @@ def extract_text_blocks(soup: BeautifulSoup) -> List[str]:
 
 def extract_field_after_label(blocks: List[str], label: str) -> str:
     """
-    Try to extract content after labels like:
-    'Origine : ...' or 'Signification : ...'
+    Extract content after labels such as:
+    'Origine : ...'
+    'Signification : ...'
     """
     pattern = re.compile(rf"^{re.escape(label)}\s*:\s*(.+)$", re.IGNORECASE)
 
@@ -87,22 +97,27 @@ def extract_field_after_label(blocks: List[str], label: str) -> str:
 
 def extract_description(blocks: List[str], first_name: str) -> str:
     """
-    Fallback description: keep the first informative paragraph mentioning the name
-    or the first substantial paragraph.
+    Extract a fallback description:
+    - prefer a paragraph mentioning the first name
+    - otherwise keep the first substantial paragraph
     """
-    candidates = []
+    first_name_lower = first_name.lower()
+    candidates: List[str] = []
 
     for block in blocks:
         lower = block.lower()
-        if len(block) > 80:
+
+        if len(block) >= 80:
             candidates.append(block)
-        if first_name.lower() in lower and len(block) > 50:
+
+        if first_name_lower in lower and len(block) >= 50:
             return block
 
     return candidates[0] if candidates else ""
 
 
 def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
+    """Parse one first-name detail page."""
     soup = BeautifulSoup(html, "html.parser")
 
     title = soup.title.get_text(strip=True) if soup.title else ""
@@ -123,12 +138,15 @@ def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
     }
 
 
-def scrape_first_names(first_names: List[str]) -> List[Dict[str, Any]]:
+def scrape_firstname_details(firstnames: List[Dict[str, str]], limit: int = 10) -> List[Dict[str, Any]]:
+    """
+    Scrape detail pages for the first N first names.
+    """
     results: List[Dict[str, Any]] = []
 
-    for first_name in first_names:
-        slug = first_name.strip().lower()
-        url = f"{BASE_URL}{slug}/"
+    for item in firstnames[:limit]:
+        first_name = item["first_name"]
+        url = item["url"]
 
         try:
             html = fetch_page(url)
@@ -150,10 +168,12 @@ def scrape_first_names(first_names: List[str]) -> List[Dict[str, Any]]:
 
 
 def main() -> None:
-    first_names = ["Hedjem", "Fonte", "Nemalie", "Daic"]
+    """Run firstname detail scraping."""
+    print("Loading firstname list...")
+    firstnames = load_json(INPUT_FILE)
 
-    print("Starting first-name scraping from OrigineNom...")
-    results = scrape_first_names(first_names)
+    print("Scraping firstname details...")
+    results = scrape_firstname_details(firstnames, limit=10)
 
     print("Saving results...")
     save_json(results, OUTPUT_FILE)
