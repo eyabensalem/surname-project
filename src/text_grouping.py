@@ -1,7 +1,7 @@
 """
 Merge origin texts according to surname groups.
 
-Person 2 pipeline step:
+pipeline step:
 - Load origins.json
 - Load grouped_names.json
 - Merge texts corresponding to each group
