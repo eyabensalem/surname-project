@@ -323,6 +323,7 @@ Améliorations possibles du projet :
 
 # 👩‍💻 Auteur
 
+Eya BEN SALEM
 Projet réalisé dans le cadre du **Master Big Data & Intelligence Artificielle**.
 
 ---
