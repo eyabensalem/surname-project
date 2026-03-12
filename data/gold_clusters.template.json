@@ -1,0 +1,24 @@
+[
+    {
+        "gold_group_id": "GOLD001",
+        "variants": [
+            "Mitailler",
+            "Mitaillier"
+        ]
+    },
+    {
+        "gold_group_id": "GOLD002",
+        "variants": [
+            "Schwartzberg",
+            "Schwarzberg",
+            "Schwarzenberg"
+        ]
+    },
+    {
+        "gold_group_id": "GOLD003",
+        "variants": [
+            "Henri",
+            "Jehen"
+        ]
+    }
+]
