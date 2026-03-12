@@ -4,30 +4,31 @@ __pycache__/
 *.pyo
 *.pyd
 
-# virtual environment
+# Virtual environments
 venv/
 .env/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# OS files
-.DS_Store
-Thumbs.db
-
 # IDE
 .vscode/
 .idea/
 
-# logs
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
 
-# build
-dist/
+# Build / packaging
 build/
-
-# python packaging
+dist/
 *.egg-info/
 
-# temporary results
-results/*.tmp
+# Streamlit
+.streamlit/
+
+# Temporary files
+*.tmp

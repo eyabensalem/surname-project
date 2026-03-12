@@ -1,0 +1,4 @@
+Unidecode
+sentence-transformers
+torch
+sentencepiece
