@@ -1,0 +1,32 @@
+{
+    "approach_name": "approach_6_spacy",
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "spacy_model": "fr_core_news_md",
+    "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "sequence_matcher_threshold": 0.88,
+    "levenshtein_threshold": 0.85,
+    "soundex_threshold": 1.0,
+    "spacy_similarity_threshold": 0.75,
+    "batch_size": 16,
+    "diagnostics": {
+        "approach": "approach_6_spacy",
+        "similarity_threshold": 0.75,
+        "total_comparisons": 37752,
+        "accepted_comparisons": 14993,
+        "rejected_comparisons": 22759
+    },
+    "input_files": {
+        "names": "D:\\Nlp naming project\\data\\names.json",
+        "origins": "D:\\Nlp naming project\\data\\origins.json"
+    },
+    "output_dir": "D:\\Nlp naming project\\outputs\\06_spacy",
+    "output_files": {
+        "structured_csv": "structured_dataset_spacy.csv",
+        "structured_json": "structured_dataset_spacy.json",
+        "cleaned_json": "cleaned_dataset_spacy.json",
+        "groups_json": "name_groups_spacy.json",
+        "final_json": "final_dataset_spacy.json",
+        "metadata_json": "run_metadata_spacy.json"
+    }
+}

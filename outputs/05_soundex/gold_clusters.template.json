@@ -1,0 +1,87 @@
+[
+  {
+    "gold_group_id": "GOLD001",
+    "variants": [
+      "berdagu",
+      "berdaguer"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD002",
+    "variants": [
+      "miranda",
+      "mirande"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD003",
+    "variants": [
+      "mancini",
+      "mancino"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD004",
+    "variants": [
+      "vigouroux",
+      "vigroux"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD005",
+    "variants": [
+      "vilain",
+      "villain"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD006",
+    "variants": [
+      "vilanova",
+      "vilanove"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD007",
+    "variants": [
+      "degrange",
+      "degranges"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD008",
+    "variants": [
+      "degre",
+      "degres"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD009",
+    "variants": [
+      "adrian",
+      "adrien"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD010",
+    "variants": [
+      "catin",
+      "cattin"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD011",
+    "variants": [
+      "caumette",
+      "caumettes"
+    ]
+  },
+  {
+    "gold_group_id": "GOLD012",
+    "variants": [
+      "dehaan",
+      "dehan",
+      "dehenne"
+    ]
+  }
+]

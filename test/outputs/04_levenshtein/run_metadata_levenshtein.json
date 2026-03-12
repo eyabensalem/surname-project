@@ -1,0 +1,34 @@
+{
+    "approach_name": "approach_4_levenshtein",
+    "input_mode": "test_data_json",
+    "input_file": "D:\\Nlp naming project\\test\\data\\test_data.json",
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "spacy_model": "fr_core_news_md",
+    "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "sequence_matcher_threshold": 0.88,
+    "levenshtein_threshold": 0.85,
+    "soundex_threshold": 1.0,
+    "spacy_similarity_threshold": 0.75,
+    "batch_size": 16,
+    "row_count": 279,
+    "unique_name_count": 270,
+    "group_count": 253,
+    "final_group_count": 253,
+    "diagnostics": {
+        "approach": "approach_4_levenshtein",
+        "similarity_threshold": 0.85,
+        "total_comparisons": 1910,
+        "accepted_comparisons": 12,
+        "rejected_comparisons": 1898
+    },
+    "output_dir": "D:\\Nlp naming project\\test\\outputs\\04_levenshtein",
+    "output_files": {
+        "structured_csv": "structured_dataset_levenshtein.csv",
+        "structured_json": "structured_dataset_levenshtein.json",
+        "cleaned_json": "cleaned_dataset_levenshtein.json",
+        "groups_json": "name_groups_levenshtein.json",
+        "final_json": "final_dataset_levenshtein.json",
+        "metadata_json": "run_metadata_levenshtein.json"
+    }
+}

@@ -1,0 +1,53 @@
+[
+    {
+        "approach_name": "approach_5_soundex",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\05_soundex\\final_dataset_soundex.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 14,
+            "false_positive_pairs": 0,
+            "false_negative_pairs": 0,
+            "predicted_positive_pairs": 14,
+            "gold_positive_pairs": 14,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0,
+            "false_merge_rate": 0.0,
+            "false_split_rate": 0.0
+        }
+    },
+    {
+        "approach_name": "approach_3_sequence_matcher",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\03_sequence_matcher\\final_dataset_sequence_matcher.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 8,
+            "false_positive_pairs": 0,
+            "false_negative_pairs": 6,
+            "predicted_positive_pairs": 8,
+            "gold_positive_pairs": 14,
+            "precision": 1.0,
+            "recall": 0.571429,
+            "f1_score": 0.727273,
+            "false_merge_rate": 0.0,
+            "false_split_rate": 0.428571
+        }
+    },
+    {
+        "approach_name": "approach_1_name_similarity",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\01_name_similarity\\final_dataset_name_similarity.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 3,
+            "false_positive_pairs": 0,
+            "false_negative_pairs": 11,
+            "predicted_positive_pairs": 3,
+            "gold_positive_pairs": 14,
+            "precision": 1.0,
+            "recall": 0.214286,
+            "f1_score": 0.352941,
+            "false_merge_rate": 0.0,
+            "false_split_rate": 0.785714
+        }
+    }
+]

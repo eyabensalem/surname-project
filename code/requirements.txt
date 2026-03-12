@@ -2,3 +2,4 @@ Unidecode
 sentence-transformers
 torch
 sentencepiece
+spacy

@@ -3,11 +3,13 @@ import json
 import os
 import re
 from collections import defaultdict
+from difflib import SequenceMatcher
 from pathlib import Path
 
 os.environ.setdefault("USE_TF", "0")
 os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 
+import spacy
 from sentence_transformers import SentenceTransformer
 from unidecode import unidecode
 
@@ -18,15 +20,28 @@ OUTPUTS_DIR = BASE_DIR.parent / "outputs"
 APPROACH_DIRECTORIES = {
     "approach_1_name_similarity": "01_name_similarity",
     "approach_2_name_and_context": "02_name_and_context",
+    "approach_3_sequence_matcher": "03_sequence_matcher",
+    "approach_4_levenshtein": "04_levenshtein",
+    "approach_5_soundex": "05_soundex",
+    "approach_6_spacy": "06_spacy",
 }
 APPROACH_FILE_SUFFIXES = {
     "approach_1_name_similarity": "name_similarity",
     "approach_2_name_and_context": "name_and_context",
+    "approach_3_sequence_matcher": "sequence_matcher",
+    "approach_4_levenshtein": "levenshtein",
+    "approach_5_soundex": "soundex",
+    "approach_6_spacy": "spacy",
 }
 APPROACH_NAME = os.getenv("NAME_GROUP_APPROACH", "approach_1_name_similarity")
 MODEL_NAME = os.getenv("HF_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
+SPACY_MODEL = os.getenv("SPACY_MODEL", "fr_core_news_md")
 SIMILARITY_THRESHOLD = float(os.getenv("NAME_GROUP_THRESHOLD", "0.78"))
 CONTEXT_SIMILARITY_THRESHOLD = float(os.getenv("NAME_CONTEXT_GROUP_THRESHOLD", str(SIMILARITY_THRESHOLD)))
+SEQUENCE_MATCHER_THRESHOLD = float(os.getenv("SEQUENCE_MATCHER_THRESHOLD", "0.88"))
+LEVENSHTEIN_THRESHOLD = float(os.getenv("LEVENSHTEIN_THRESHOLD", "0.85"))
+SOUNDEX_THRESHOLD = float(os.getenv("SOUNDEX_THRESHOLD", "1.0"))
+SPACY_SIMILARITY_THRESHOLD = float(os.getenv("SPACY_SIMILARITY_THRESHOLD", "0.75"))
 BATCH_SIZE = int(os.getenv("EMBEDDING_BATCH_SIZE", "16"))
 
 
@@ -168,6 +183,76 @@ def cosine_similarity(vector_a, vector_b) -> float:
     return sum(a * b for a, b in zip(vector_a, vector_b))
 
 
+def levenshtein_distance(a: str, b: str) -> int:
+    if a == b:
+        return 0
+    if not a:
+        return len(b)
+    if not b:
+        return len(a)
+
+    previous_row = list(range(len(b) + 1))
+    for index_a, char_a in enumerate(a, start=1):
+        current_row = [index_a]
+        for index_b, char_b in enumerate(b, start=1):
+            insert_cost = current_row[index_b - 1] + 1
+            delete_cost = previous_row[index_b] + 1
+            replace_cost = previous_row[index_b - 1] + (char_a != char_b)
+            current_row.append(min(insert_cost, delete_cost, replace_cost))
+        previous_row = current_row
+    return previous_row[-1]
+
+
+def levenshtein_ratio(a: str, b: str) -> float:
+    max_len = max(len(a), len(b))
+    if max_len == 0:
+        return 1.0
+    return 1 - (levenshtein_distance(a, b) / max_len)
+
+
+def soundex(text: str) -> str:
+    normalized = normalize_text(text)
+    if not normalized:
+        return ""
+
+    letters = normalized.replace(" ", "")
+    if not letters:
+        return ""
+
+    first_letter = letters[0].upper()
+    mapping = {
+        "b": "1",
+        "f": "1",
+        "p": "1",
+        "v": "1",
+        "c": "2",
+        "g": "2",
+        "j": "2",
+        "k": "2",
+        "q": "2",
+        "s": "2",
+        "x": "2",
+        "z": "2",
+        "d": "3",
+        "t": "3",
+        "l": "4",
+        "m": "5",
+        "n": "5",
+        "r": "6",
+    }
+
+    encoded = [first_letter]
+    previous_digit = mapping.get(letters[0], "")
+    for char in letters[1:]:
+        digit = mapping.get(char, "")
+        if digit and digit != previous_digit:
+            encoded.append(digit)
+        previous_digit = digit
+
+    code = "".join(encoded)[:4]
+    return code.ljust(4, "0")
+
+
 def load_embedding_model() -> SentenceTransformer:
     try:
         return SentenceTransformer(MODEL_NAME)
@@ -175,6 +260,16 @@ def load_embedding_model() -> SentenceTransformer:
         raise RuntimeError(
             "Unable to load the Hugging Face model. "
             f"Set HF_MODEL_NAME if you want another model, or install/download '{MODEL_NAME}' first."
+        ) from exc
+
+
+def load_spacy_model():
+    try:
+        return spacy.load(SPACY_MODEL)
+    except Exception as exc:
+        raise RuntimeError(
+            "Unable to load the spaCy model. "
+            f"Install/download '{SPACY_MODEL}' first or set SPACY_MODEL to an available pipeline."
         ) from exc
 
 
@@ -251,7 +346,7 @@ def build_normalized_to_group(groups: list[dict]) -> dict[str, dict]:
     return normalized_to_group
 
 
-def build_groups(
+def build_groups_from_embeddings(
     cleaned_rows: list[dict],
     comparison_text_builder,
     similarity_threshold: float,
@@ -259,10 +354,7 @@ def build_groups(
 ) -> tuple[list[dict], dict[str, dict], dict]:
     variants_by_normalized, candidate_buckets = aggregate_variants(cleaned_rows)
     normalized_names = sorted(variants_by_normalized)
-    comparison_names = []
-
-    for normalized_name in normalized_names:
-        comparison_names.append(comparison_text_builder(variants_by_normalized[normalized_name]))
+    comparison_names = [comparison_text_builder(variants_by_normalized[name]) for name in normalized_names]
 
     model = load_embedding_model()
     embeddings = model.encode(
@@ -275,6 +367,28 @@ def build_groups(
     for index, normalized_name in enumerate(normalized_names):
         variants_by_normalized[normalized_name]["embedding"] = embeddings[index]
 
+    def score_builder(source_name: str, _source_bucket: dict, target_name: str, _target_bucket: dict) -> float:
+        source_embedding = variants_by_normalized[source_name]["embedding"]
+        target_embedding = variants_by_normalized[target_name]["embedding"]
+        return cosine_similarity(source_embedding, target_embedding)
+
+    return build_groups_from_scores(
+        variants_by_normalized,
+        candidate_buckets,
+        score_builder=score_builder,
+        similarity_threshold=similarity_threshold,
+        approach_label=approach_label,
+    )
+
+
+def build_groups_from_scores(
+    variants_by_normalized: dict[str, dict],
+    candidate_buckets: defaultdict[tuple[str, int], list[str]],
+    score_builder,
+    similarity_threshold: float,
+    approach_label: str,
+) -> tuple[list[dict], dict[str, dict], dict]:
+    normalized_names = sorted(variants_by_normalized)
     groups = []
     assigned = set()
     group_index = 1
@@ -285,10 +399,10 @@ def build_groups(
         if normalized_name in assigned:
             continue
 
+        source_bucket = variants_by_normalized[normalized_name]
         key_prefix, key_length = build_candidate_key(normalized_name)
         group_variants = [normalized_name]
         comparison_details = []
-        source_embedding = variants_by_normalized[normalized_name]["embedding"]
 
         for length in range(key_length - 3, key_length + 4):
             for other_name in candidate_buckets.get((key_prefix, length), []):
@@ -298,8 +412,8 @@ def build_groups(
                     continue
 
                 total_comparisons += 1
-                target_embedding = variants_by_normalized[other_name]["embedding"]
-                score = cosine_similarity(source_embedding, target_embedding)
+                target_bucket = variants_by_normalized[other_name]
+                score = score_builder(normalized_name, source_bucket, other_name, target_bucket)
                 if score >= similarity_threshold:
                     accepted_comparisons += 1
                     group_variants.append(other_name)
@@ -326,6 +440,78 @@ def build_groups(
         "rejected_comparisons": total_comparisons - accepted_comparisons,
     }
     return groups, build_normalized_to_group(groups), diagnostics
+
+
+def build_groups_with_sequence_matcher(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
+    variants_by_normalized, candidate_buckets = aggregate_variants(cleaned_rows)
+
+    def score_builder(source_name: str, _source_bucket: dict, target_name: str, _target_bucket: dict) -> float:
+        return SequenceMatcher(None, source_name, target_name).ratio()
+
+    return build_groups_from_scores(
+        variants_by_normalized,
+        candidate_buckets,
+        score_builder=score_builder,
+        similarity_threshold=SEQUENCE_MATCHER_THRESHOLD,
+        approach_label="approach_3_sequence_matcher",
+    )
+
+
+def build_groups_with_levenshtein(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
+    variants_by_normalized, candidate_buckets = aggregate_variants(cleaned_rows)
+
+    def score_builder(source_name: str, _source_bucket: dict, target_name: str, _target_bucket: dict) -> float:
+        return levenshtein_ratio(source_name, target_name)
+
+    return build_groups_from_scores(
+        variants_by_normalized,
+        candidate_buckets,
+        score_builder=score_builder,
+        similarity_threshold=LEVENSHTEIN_THRESHOLD,
+        approach_label="approach_4_levenshtein",
+    )
+
+
+def build_groups_with_soundex(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
+    variants_by_normalized, candidate_buckets = aggregate_variants(cleaned_rows)
+    for normalized_name, bucket in variants_by_normalized.items():
+        bucket["soundex"] = soundex(normalized_name)
+
+    def score_builder(_source_name: str, source_bucket: dict, _target_name: str, target_bucket: dict) -> float:
+        if source_bucket["soundex"] and source_bucket["soundex"] == target_bucket["soundex"]:
+            return 1.0
+        return 0.0
+
+    return build_groups_from_scores(
+        variants_by_normalized,
+        candidate_buckets,
+        score_builder=score_builder,
+        similarity_threshold=SOUNDEX_THRESHOLD,
+        approach_label="approach_5_soundex",
+    )
+
+
+def build_groups_with_spacy(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
+    variants_by_normalized, candidate_buckets = aggregate_variants(cleaned_rows)
+    nlp = load_spacy_model()
+    normalized_names = sorted(variants_by_normalized)
+    comparison_texts = [build_name_and_context_text(variants_by_normalized[name]) for name in normalized_names]
+
+    for normalized_name, doc in zip(normalized_names, nlp.pipe(comparison_texts), strict=True):
+        variants_by_normalized[normalized_name]["spacy_doc"] = doc
+
+    def score_builder(source_name: str, _source_bucket: dict, target_name: str, _target_bucket: dict) -> float:
+        source_doc = variants_by_normalized[source_name]["spacy_doc"]
+        target_doc = variants_by_normalized[target_name]["spacy_doc"]
+        return source_doc.similarity(target_doc)
+
+    return build_groups_from_scores(
+        variants_by_normalized,
+        candidate_buckets,
+        score_builder=score_builder,
+        similarity_threshold=SPACY_SIMILARITY_THRESHOLD,
+        approach_label="approach_6_spacy",
+    )
 
 
 def build_final_dataset(cleaned_rows: list[dict], normalized_to_group: dict[str, dict]) -> list[dict]:
@@ -368,7 +554,7 @@ def build_final_dataset(cleaned_rows: list[dict], normalized_to_group: dict[str,
 
 def run_selected_approach(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
     if APPROACH_NAME == "approach_1_name_similarity":
-        return build_groups(
+        return build_groups_from_embeddings(
             cleaned_rows,
             comparison_text_builder=build_name_only_text,
             similarity_threshold=SIMILARITY_THRESHOLD,
@@ -376,12 +562,24 @@ def run_selected_approach(cleaned_rows: list[dict]) -> tuple[list[dict], dict[st
         )
 
     if APPROACH_NAME == "approach_2_name_and_context":
-        return build_groups(
+        return build_groups_from_embeddings(
             cleaned_rows,
             comparison_text_builder=build_name_and_context_text,
             similarity_threshold=CONTEXT_SIMILARITY_THRESHOLD,
             approach_label=APPROACH_NAME,
         )
+
+    if APPROACH_NAME == "approach_3_sequence_matcher":
+        return build_groups_with_sequence_matcher(cleaned_rows)
+
+    if APPROACH_NAME == "approach_4_levenshtein":
+        return build_groups_with_levenshtein(cleaned_rows)
+
+    if APPROACH_NAME == "approach_5_soundex":
+        return build_groups_with_soundex(cleaned_rows)
+
+    if APPROACH_NAME == "approach_6_spacy":
+        return build_groups_with_spacy(cleaned_rows)
 
     raise ValueError(f"Unsupported approach '{APPROACH_NAME}'.")
 
@@ -411,8 +609,13 @@ def main() -> None:
         {
             "approach_name": APPROACH_NAME,
             "model_name": MODEL_NAME,
+            "spacy_model": SPACY_MODEL,
             "similarity_threshold": SIMILARITY_THRESHOLD,
             "context_similarity_threshold": CONTEXT_SIMILARITY_THRESHOLD,
+            "sequence_matcher_threshold": SEQUENCE_MATCHER_THRESHOLD,
+            "levenshtein_threshold": LEVENSHTEIN_THRESHOLD,
+            "soundex_threshold": SOUNDEX_THRESHOLD,
+            "spacy_similarity_threshold": SPACY_SIMILARITY_THRESHOLD,
             "batch_size": BATCH_SIZE,
             "diagnostics": diagnostics,
             "input_files": {

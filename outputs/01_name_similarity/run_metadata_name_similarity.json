@@ -1,11 +1,32 @@
 {
     "approach_name": "approach_1_name_similarity",
     "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "spacy_model": "fr_core_news_md",
     "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "sequence_matcher_threshold": 0.88,
+    "levenshtein_threshold": 0.85,
+    "soundex_threshold": 1.0,
+    "spacy_similarity_threshold": 0.75,
     "batch_size": 16,
+    "diagnostics": {
+        "approach": "approach_1_name_similarity",
+        "similarity_threshold": 0.78,
+        "total_comparisons": 335228,
+        "accepted_comparisons": 4315,
+        "rejected_comparisons": 330913
+    },
     "input_files": {
         "names": "D:\\Nlp naming project\\data\\names.json",
         "origins": "D:\\Nlp naming project\\data\\origins.json"
     },
-    "output_dir": "D:\\Nlp naming project\\outputs\\01_name_similarity"
+    "output_dir": "D:\\Nlp naming project\\outputs\\01_name_similarity",
+    "output_files": {
+        "structured_csv": "structured_dataset_name_similarity.csv",
+        "structured_json": "structured_dataset_name_similarity.json",
+        "cleaned_json": "cleaned_dataset_name_similarity.json",
+        "groups_json": "name_groups_name_similarity.json",
+        "final_json": "final_dataset_name_similarity.json",
+        "metadata_json": "run_metadata_name_similarity.json"
+    }
 }
