@@ -261,23 +261,25 @@ http://localhost:8501
 ---
 
 # 📷 Interface de l'application
+![Interface](screenshots/page1.png)
 
 ### Recherche de nom de famille
 
-📷 Capture à ajouter ici
-![Interface](images/app_interface.png)
+![Interface](screenshots/page2.png)
 
 ---
 
 ### Recherche de prénom
 
-📷 Capture à ajouter ici
+![Interface](screenshots/page3.png)
+
 
 ---
 
 ### Visualisations
 
-📷 Capture à ajouter ici
+![Interface](screenshots/page4.png)
+![Interface](screenshots/page5.png)
 
 ---
 
