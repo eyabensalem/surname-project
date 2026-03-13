@@ -35,7 +35,6 @@
 - [Évaluation](#-évaluation)
 - [Fichiers clés](#-fichiers-clés)
 - [Commandes](#-commandes)
-- [Résumé pour l'oral](#-résumé-pour-loral)
 
 ---
 
@@ -291,23 +290,6 @@ python -m pip install -r requirements.txt
 .\venv\Scripts\python.exe test\compare_test_metrics.py
 ```
 
----
-
-## 🎤 Résumé pour l'oral
-
-> Le projet est organisé en plusieurs modules.
->
-> **`data/`** contient les données brutes — noms et textes d'origine.
->
-> **`code/`** contient le pipeline principal : nettoyage, regroupement par Soundex, fusion des textes et génération de résumés.
->
-> **`src/`** contient les scripts complémentaires : scraping des prénoms, résumés automatiques, évaluation ROUGE.
->
-> Les fichiers générés sont stockés dans **`outputs/`** (par modèle) et **`results/`** (version finale).
->
-> Enfin, **`app/streamlit_app.py`** affiche tout dans une interface interactive.
-
----
 
 <div align="center">
 

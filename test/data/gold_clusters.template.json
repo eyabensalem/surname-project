@@ -1,230 +1,54 @@
 [
-{
-"gold_group_id": "GOLD001",
-"variants": ["berdagu", "berdaguer"]
-},
-{
-"gold_group_id": "GOLD002",
-"variants": ["berdoll", "Berdolt", "Berdollt", "Berdold"]
-},
-{
-"gold_group_id": "GOLD003",
-"variants": ["berdot", "Berdale", "Berdalle", "Berdalou", "Berdance", "Berden", "Berdet", "Berdeu", "Berdolou", "Berdos", "Berdou", "Berdous", "Berdu", "Berducou", "Berdy"]
-},
-{
-"gold_group_id": "GOLD004",
-"variants": ["berdugo", "Verdugo"]
-},
-{
-"gold_group_id": "GOLD005",
-"variants": ["berenz", "Berens", "Behrens"]
-},
-{
-"gold_group_id": "GOLD006",
-"variants": ["bererd", "Berard"]
-},
-{
-"gold_group_id": "GOLD007",
-"variants": ["berezaie", "Berezai", "Berezay", "Berrezai", "Berrezaie", "Berrezay"]
-},
-{
-"gold_group_id": "GOLD008",
-"variants": ["mamms", "Mamès", "Mamet", "Mammet", "Mametz", "Mamez", "Mammez"]
-},
-{
-"gold_group_id": "GOLD009",
-"variants": ["mamprin", "Manprin", "Mambrin"]
-},
-{
-"gold_group_id": "GOLD010",
-"variants": ["man", "Meana", "Meano", "Meani", "Meaño"]
-},
-{
-"gold_group_id": "GOLD011",
-"variants": ["manalich", "Mañalich", "Manyalich"]
-},
-{
-"gold_group_id": "GOLD012",
-"variants": ["manavit", "Maneby", "Manevie", "Manevit", "Manevy"]
-},
-{
-"gold_group_id": "GOLD013",
-"variants": ["manceau", "Mançaux", "Manceaux", "Mancel"]
-},
-{
-"gold_group_id": "GOLD014",
-"variants": ["manchard", "Manchart"]
-},
-{
-"gold_group_id": "GOLD015",
-"variants": ["mancini", "mancino"]
-},
-{
-"gold_group_id": "GOLD016",
-"variants": ["miranda", "mirande"]
-},
-{
-"gold_group_id": "GOLD017",
-"variants": ["miraud", "Mirau", "Mirault", "Miraut", "Miraux", "Mireau", "Mireaud", "Mireaux"]
-},
-{
-"gold_group_id": "GOLD018",
-"variants": ["mirc", "Mir", "Myr"]
-},
-{
-"gold_group_id": "GOLD019",
-"variants": ["mire", "Mierre"]
-},
-{
-"gold_group_id": "GOLD020",
-"variants": ["mirebeau", "Mirebault", "Mirebeault", "Mirbeau", "Mirbeaux", "Mirbault", "Mirbaux"]
-},
-{
-"gold_group_id": "GOLD021",
-"variants": ["mireux", "Mireur"]
-},
-{
-"gold_group_id": "GOLD022",
-"variants": ["mirloup", "Mirlou", "Mirloux", "Mireloup"]
-},
-{
-"gold_group_id": "GOLD023",
-"variants": ["mirmand", "Mirman"]
-},
-{
-"gold_group_id": "GOLD024",
-"variants": ["misery", "Misiri", "Misiry"]
-},
-{
-"gold_group_id": "GOLD025",
-"variants": ["mismaque", "Mismac", "Mismack", "Mismacq", "Mismacque", "Mismak"]
-},
-{
-"gold_group_id": "GOLD026",
-"variants": ["misriaux", "Misériaud"]
-},
-{
-"gold_group_id": "GOLD027",
-"variants": ["missimilly", "Meissimilly"]
-},
-{
-"gold_group_id": "GOLD028",
-"variants": ["mitaine", "Mittaine"]
-},
-{
-"gold_group_id": "GOLD029",
-"variants": ["mitaut", "Mitau", "Mitaud", "Mitault", "Miteau", "Miteaud", "Miteaux"]
-},
-{
-"gold_group_id": "GOLD030",
-"variants": ["mitchell", "Mitchel"]
-},
-{
-"gold_group_id": "GOLD031",
-"variants": ["mithieux", "Mithioux"]
-},
-{
-"gold_group_id": "GOLD032",
-"variants": ["mitifiot", "Mitiffiot", "Métiffiot", "Métifiot"]
-},
-{
-"gold_group_id": "GOLD033",
-"variants": ["mitjaville", "Mitjavila", "Mitjavile"]
-},
-{
-"gold_group_id": "GOLD034",
-"variants": ["mitouard", "Mitouart", "Mithouard"]
-},
-{
-"gold_group_id": "GOLD035",
-"variants": ["mitrochine", "Mitroshin", "Mitroshkin"]
-},
-{
-"gold_group_id": "GOLD036",
-"variants": ["mittelette", "Mitelette"]
-},
-{
-"gold_group_id": "GOLD037",
-"variants": ["mitterrand", "Miteran", "Miterrand", "Mitterand"]
-},
-{
-"gold_group_id": "GOLD038",
-"variants": ["mitton", "Miton", "Mithon"]
-},
-{
-"gold_group_id": "GOLD039",
-"variants": ["mivis", "Miewis"]
-},
-{
-"gold_group_id": "GOLD040",
-"variants": ["vigliotti", "Viglia", "Viglielmo", "Viglietta", "Viglietti", "Viglino", "Viglione"]
-},
-{
-"gold_group_id": "GOLD041",
-"variants": ["vign", "Vignié"]
-},
-{
-"gold_group_id": "GOLD042",
-"variants": ["vignal", "Vignals", "Vignau", "Vignial", "Vignaux", "Vigneau", "Vigneaux"]
-},
-{
-"gold_group_id": "GOLD043",
-"variants": ["vignand", "Vignant"]
-},
-{
-"gold_group_id": "GOLD044",
-"variants": ["vignaud", "Vignault", "Vigneault", "Vigneaud"]
-},
-{
-"gold_group_id": "GOLD045",
-"variants": ["vignelles", "Vignelle"]
-},
-{
-"gold_group_id": "GOLD046",
-"variants": ["vigouroux", "Vigroux", "Vigoureux", "Vigreux"]
-},
-{
-"gold_group_id": "GOLD047",
-"variants": ["vila", "Ville"]
-},
-{
-"gold_group_id": "GOLD048",
-"variants": ["vilanova", "vilanove", "Villeneuve"]
-},
-{
-"gold_group_id": "GOLD049",
-"variants": ["vilarem", "Villarem", "Villaren"]
-},
-{
-"gold_group_id": "GOLD050",
-"variants": ["vildey", "Villedey", "Vildé"]
-},
-{
-"gold_group_id": "GOLD051",
-"variants": ["vilfroy", "Villefroid", "Villefroy"]
-},
-{
-"gold_group_id": "GOLD052",
-"variants": ["villacque", "Villacèque", "Vilaseca", "Vilaceca"]
-},
-{
-"gold_group_id": "GOLD053",
-"variants": ["villadary", "Villedary"]
-},
-{
-"gold_group_id": "GOLD054",
-"variants": ["villaescusa", "Villascusa", "Villaexcusa"]
-},
-{
-"gold_group_id": "GOLD055",
-"variants": ["vilain", "villain"]
-},
-{
-"gold_group_id": "GOLD056",
-"variants": ["villanfin", "Villenfin"]
-},
-{
-"gold_group_id": "GOLD057",
-"variants": ["villanneau", "Villaneau"]
-}
+  {
+    "gold_group_id": "GOLD001",
+    "variants": ["berdagu", "berdaguer"]
+  },
+  {
+    "gold_group_id": "GOLD002",
+    "variants": ["mancini", "mancino"]
+  },
+  {
+    "gold_group_id": "GOLD003",
+    "variants": ["miranda", "mirande"]
+  },
+  {
+    "gold_group_id": "GOLD004",
+    "variants": ["vigouroux", "vigroux"]
+  },
+  {
+    "gold_group_id": "GOLD005",
+    "variants": ["vilanova", "vilanove", "villanueva"]
+  },
+  {
+    "gold_group_id": "GOLD006",
+    "variants": ["villacque", "vilaseca"]
+  },
+  {
+    "gold_group_id": "GOLD007",
+    "variants": ["vilain", "villain"]
+  },
+  {
+    "gold_group_id": "GOLD008",
+    "variants": ["berdugo"]
+  },
+  {
+    "gold_group_id": "GOLD009",
+    "variants": ["villanfin"]
+  },
+  {
+    "gold_group_id": "GOLD010",
+    "variants": ["villaime"]
+  },
+  {
+    "gold_group_id": "GOLD011",
+    "variants": ["berdoll"]
+  },
+  {
+    "gold_group_id": "GOLD012",
+    "variants": ["berdot"]
+  },
+  {
+    "gold_group_id": "GOLD013",
+    "variants": ["villafines"]
+  }
 ]

@@ -16,6 +16,7 @@ from config import (
 )
 
 SUMMARY_TOP_N = 2
+MIN_VARIANTS_PER_GROUP = 2
 IMPORTANT_SUMMARY_KEYWORDS = [
     "origine",
     "signifie",
@@ -245,6 +246,9 @@ def build_groups(entries: list[dict]) -> list[dict]:
         meanings = unique_non_empty(entry.get("meaning", "") for entry in group_entries)
         descriptions = unique_non_empty(entry.get("description", "") for entry in group_entries)
         source_urls = unique_non_empty(entry.get("url", "") for entry in group_entries)
+
+        if len(variants) < MIN_VARIANTS_PER_GROUP:
+            continue
 
         group = {
             "group_id": f"firstname_soundex_{group_index:04d}",

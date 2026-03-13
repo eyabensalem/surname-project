@@ -3,85 +3,85 @@
         "approach_name": "approach_5_soundex",
         "prediction_file": "D:\\Nlp naming project\\test\\outputs\\05_soundex\\final_dataset_soundex.json",
         "metrics": {
-            "evaluated_name_count": 202,
-            "true_positive_pairs": 5,
+            "evaluated_name_count": 21,
+            "true_positive_pairs": 8,
             "false_positive_pairs": 7,
-            "false_negative_pairs": 397,
-            "predicted_positive_pairs": 12,
-            "gold_positive_pairs": 402,
-            "precision": 0.416667,
-            "recall": 0.012438,
-            "f1_score": 0.024155,
-            "false_merge_rate": 0.583333,
-            "false_split_rate": 0.987562
+            "false_negative_pairs": 1,
+            "predicted_positive_pairs": 15,
+            "gold_positive_pairs": 9,
+            "precision": 0.533333,
+            "recall": 0.888889,
+            "f1_score": 0.666667,
+            "false_merge_rate": 0.466667,
+            "false_split_rate": 0.111111
         }
     },
     {
         "approach_name": "approach_4_levenshtein",
         "prediction_file": "D:\\Nlp naming project\\test\\outputs\\04_levenshtein\\final_dataset_levenshtein.json",
         "metrics": {
-            "evaluated_name_count": 202,
+            "evaluated_name_count": 21,
             "true_positive_pairs": 4,
-            "false_positive_pairs": 3,
-            "false_negative_pairs": 398,
-            "predicted_positive_pairs": 7,
-            "gold_positive_pairs": 402,
-            "precision": 0.571429,
-            "recall": 0.00995,
-            "f1_score": 0.01956,
-            "false_merge_rate": 0.428571,
-            "false_split_rate": 0.99005
-        }
-    },
-    {
-        "approach_name": "approach_6_spacy",
-        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\06_spacy\\final_dataset_spacy.json",
-        "metrics": {
-            "evaluated_name_count": 202,
-            "true_positive_pairs": 4,
-            "false_positive_pairs": 83,
-            "false_negative_pairs": 398,
-            "predicted_positive_pairs": 87,
-            "gold_positive_pairs": 402,
-            "precision": 0.045977,
-            "recall": 0.00995,
-            "f1_score": 0.01636,
-            "false_merge_rate": 0.954023,
-            "false_split_rate": 0.99005
+            "false_positive_pairs": 1,
+            "false_negative_pairs": 5,
+            "predicted_positive_pairs": 5,
+            "gold_positive_pairs": 9,
+            "precision": 0.8,
+            "recall": 0.444444,
+            "f1_score": 0.571429,
+            "false_merge_rate": 0.2,
+            "false_split_rate": 0.555556
         }
     },
     {
         "approach_name": "approach_3_sequence_matcher",
         "prediction_file": "D:\\Nlp naming project\\test\\outputs\\03_sequence_matcher\\final_dataset_sequence_matcher.json",
         "metrics": {
-            "evaluated_name_count": 202,
+            "evaluated_name_count": 21,
             "true_positive_pairs": 3,
-            "false_positive_pairs": 2,
-            "false_negative_pairs": 399,
-            "predicted_positive_pairs": 5,
-            "gold_positive_pairs": 402,
-            "precision": 0.6,
-            "recall": 0.007463,
-            "f1_score": 0.014742,
-            "false_merge_rate": 0.4,
-            "false_split_rate": 0.992537
+            "false_positive_pairs": 1,
+            "false_negative_pairs": 6,
+            "predicted_positive_pairs": 4,
+            "gold_positive_pairs": 9,
+            "precision": 0.75,
+            "recall": 0.333333,
+            "f1_score": 0.461538,
+            "false_merge_rate": 0.25,
+            "false_split_rate": 0.666667
         }
     },
     {
         "approach_name": "approach_2_name_and_context",
         "prediction_file": "D:\\Nlp naming project\\test\\outputs\\02_name_and_context\\final_dataset_name_and_context.json",
         "metrics": {
-            "evaluated_name_count": 202,
-            "true_positive_pairs": 2,
-            "false_positive_pairs": 4,
-            "false_negative_pairs": 400,
-            "predicted_positive_pairs": 6,
-            "gold_positive_pairs": 402,
-            "precision": 0.333333,
-            "recall": 0.004975,
-            "f1_score": 0.009804,
-            "false_merge_rate": 0.666667,
-            "false_split_rate": 0.995025
+            "evaluated_name_count": 21,
+            "true_positive_pairs": 3,
+            "false_positive_pairs": 2,
+            "false_negative_pairs": 6,
+            "predicted_positive_pairs": 5,
+            "gold_positive_pairs": 9,
+            "precision": 0.6,
+            "recall": 0.333333,
+            "f1_score": 0.428571,
+            "false_merge_rate": 0.4,
+            "false_split_rate": 0.666667
+        }
+    },
+    {
+        "approach_name": "approach_6_spacy",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\06_spacy\\final_dataset_spacy.json",
+        "metrics": {
+            "evaluated_name_count": 21,
+            "true_positive_pairs": 5,
+            "false_positive_pairs": 16,
+            "false_negative_pairs": 4,
+            "predicted_positive_pairs": 21,
+            "gold_positive_pairs": 9,
+            "precision": 0.238095,
+            "recall": 0.555556,
+            "f1_score": 0.333333,
+            "false_merge_rate": 0.761905,
+            "false_split_rate": 0.444444
         }
     }
 ]
