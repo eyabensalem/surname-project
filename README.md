@@ -193,6 +193,30 @@ Six approches ont été comparées pour regrouper les variantes de noms :
 
 > **Modèle retenu : Soundex** — deux noms phonétiquement proches sont regroupés ensemble, ce qui est pertinent pour les variantes régionales et historiques de noms de famille.
 
+---
+
+## 📝 Génération de résumés
+
+### Noms de famille
+
+Le résumé est construit à partir des **textes fusionnés** du groupe. Les phrases les plus représentatives sont sélectionnées automatiquement.
+
+### Prénoms
+
+Le résumé est généré à partir des informations scrapées : **origine**, **signification**, **description**.
+
+### Comparaison de modèles (`compare_summarizers.py`)
+
+Trois approches ont été testées :
+
+| Modèle | Type | Caractéristiques |
+|---|---|---|
+| **TF-IDF + mots-clés** | Extractif | Rapide, basé sur la fréquence |
+| **TextRank** | Extractif | Graphe de similarité entre phrases |
+| **DistilBART** | Abstractif | Génératif, reformule le contenu |
+
+---
+
 ## 📊 Évaluation
 
 ### Regroupement — `test/`
@@ -207,339 +231,15 @@ Les groupes prédits sont comparés à un fichier de référence (`gold_clusters
 | **False Merge** | Noms distincts mis dans le même groupe |
 | **False Split** | Variantes du même nom dans des groupes séparés |
 
-```
+### Résumés — `evaluate_summaries.py`
 
-## 📝 Génération automatique de résumés
-
-Après le regroupement des variantes de noms, plusieurs textes d’origine peuvent être associés à un même groupe.
-
-Ces textes peuvent être :
-- longs
-- redondants
-- issus de sources différentes
-
-L’objectif est donc de générer un **résumé court et représentatif** pour chaque groupe.
-
-### Pipeline de résumé
+Évaluation automatique des résumés avec **ROUGE** :
 
 ```
-
-Textes d'origine
-↓
-Fusion des textes
-↓
-Extraction des phrases importantes
-↓
-Résumé automatique
-
+ROUGE-1  →  chevauchement des unigrammes
+ROUGE-2  →  chevauchement des bigrammes
+ROUGE-L  →  plus longue sous-séquence commune
 ```
-
----
-
-## 🔬 Modèles de résumé testés
-
-Trois approches ont été comparées pour générer les résumés.
-
-### 1. TF-IDF + mots clés
-
-Type : **résumé extractif**
-
-Principe :
-
-1. découper le texte en phrases
-2. calculer l’importance des mots avec **TF-IDF**
-3. ajouter un score basé sur des mots clés métier
-
-Exemples de mots clés :
-
-```
-
-origine
-signifie
-variante
-désigne
-forme
-
-```
-
-Score d’une phrase :
-
-```
-
-score = score TF-IDF + score mots clés
-
-```
-
-Les **2 phrases les mieux classées** sont sélectionnées pour construire le résumé.
-
-Avantages :
-
-- rapide
-- interprétable
-- adapté à des textes courts et factuels
-
----
-
-### 2. TextRank
-
-Type : **résumé extractif**
-
-TextRank est une méthode inspirée de l’algorithme **PageRank**.
-
-Principe :
-
-1. chaque phrase devient un **nœud d’un graphe**
-2. la similarité entre phrases est calculée
-3. les phrases les plus **centrales dans le graphe** sont sélectionnées
-
-Avantages :
-
-- méthode classique de summarization
-- ne nécessite pas d'entraînement
-
----
-
-### 3. DistilBART
-
-Type : **résumé abstractive**
-
-Contrairement aux méthodes extractives, ce modèle **génère un nouveau texte** au lieu de sélectionner des phrases.
-
-Modèle utilisé :
-
-```
-
-sshleifer/distilbart-cnn-12-6
-
-```
-
-Fonctionnement :
-
-```
-
-texte long
-↓
-transformer encoder
-↓
-transformer decoder
-↓
-résumé généré
-
-```
-
-Avantages :
-
-- peut reformuler le texte
-- résumé plus naturel
-
-Limites :
-
-- parfois moins fidèle au texte original
-- modèle plus lourd
-
----
-
-## 📊 Évaluation des résumés
-
-Les résumés générés sont évalués avec la métrique **ROUGE**.
-
-Le principe consiste à comparer :
-
-```
-
-résumé généré
-vs
-résumé de référence
-
-```
-
-Trois métriques principales sont utilisées :
-
-| métrique | description |
-|--------|-------------|
-| ROUGE-1 | chevauchement des mots |
-| ROUGE-2 | chevauchement des paires de mots |
-| ROUGE-L | plus longue sous-séquence commune |
-
-Les scores calculés :
-
-```
-
-ROUGE-1 F1
-ROUGE-L F1
-
-```
-
-Un score élevé signifie que le résumé :
-
-- contient les informations importantes
-- reste proche du résumé de référence
-
----
-
-## ⚙ Implémentation
-
-L’évaluation est implémentée dans :
-
-```
-
-evaluate_summaries.py
-
-```
-
-Librairie utilisée :
-
-```
-
-rouge_score
-
-```
-
-Pipeline :
-
-```
-
-résumé généré
-↓
-comparaison avec résumé de référence
-↓
-calcul des scores ROUGE
-↓
-sauvegarde dans evaluation_results.json
-
-```
-
----
-
-## 🏆 Modèle retenu
-
-Après comparaison, la méthode **TF-IDF + mots clés** donne les meilleurs résultats.
-
-| modèle | résultat |
-|------|--------|
-TF-IDF + keywords | ⭐ meilleur |
-TextRank | correct |
-DistilBART | moins précis |
-
-Cela s’explique par la nature des textes d’origine :
-
-- courts
-- factuels
-- structurés
-
-Dans ce contexte, une **méthode extractive simple est plus efficace qu’un modèle génératif**.
-```
-
----
-
-# Maintenant la partie scraping à mettre dans README
-
-Ajoute une section :
-
-```markdown
-## 🌐 Web scraping des prénoms
-
-Les informations sur les prénoms sont récupérées automatiquement depuis le site **OrigineNom**.
-
-Le scraping est réalisé en deux étapes.
-
-### 1. Récupération de la liste des prénoms
-
-Script :
-
-```
-
-scrape_firstname_list.py
-
-```
-
-Ce script parcourt les pages :
-
-```
-
-[https://originenom.com/liste-des-prenoms/](https://originenom.com/liste-des-prenoms/)
-
-```
-
-et extrait :
-
-- le prénom
-- l’URL de la page de détail
-
-Exemple :
-
-```
-
-{
-"first_name": "Abel",
-"url": "[https://originenom.com/origine-du-prenom/abel/](https://originenom.com/origine-du-prenom/abel/)"
-}
-
-```
-
-Les résultats sont stockés dans :
-
-```
-
-firstnames_list.json
-
-```
-
----
-
-### 2. Extraction des détails
-
-Script :
-
-```
-
-scrape_firstname_details.py
-
-```
-
-Pour chaque prénom de la liste :
-
-1. la page est téléchargée avec **Requests**
-2. le HTML est analysé avec **BeautifulSoup**
-3. les informations suivantes sont extraites :
-
-- origine
-- signification
-- description
-
-Les données sont enregistrées dans :
-
-```
-
-firstnames_dataset.json
-
-```
-
----
-
-### Dataset final
-
-Chaque prénom contient :
-
-```
-
-{
-"first_name": "Abel",
-"origin": "Hébraïque",
-"meaning": "souffle ou vapeur",
-"description": "...",
-"quality_score": 3
-}
-
-```
-
-Ces données sont ensuite utilisées pour :
-
-- la génération de résumés
-- l’exploration dans l’application Streamlit
-```
-
-
 
 ---
 
