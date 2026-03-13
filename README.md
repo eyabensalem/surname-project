@@ -27,6 +27,7 @@
 ## 🗺️ Table des matières
 
 - [Vue d'ensemble](#-vue-densemble)
+- [Nettoyage NLP](#-nettoyage-nlp)
 - [Structure du projet](#-structure-du-projet)
 - [Pipeline — Noms de famille](#-pipeline--noms-de-famille)
 - [Pipeline — Prénoms](#-pipeline--prénoms)
@@ -133,7 +134,8 @@ Le pipeline principal transforme des noms bruts en groupes enrichis avec résum�
                  │
                  ▼
 ┌─────────────────────────────────┐
-│  results/  (fichiers finaux)    │
+│       Outputs/visualizations
+│       comparison_summary.json
 └────────────────┬────────────────┘
                  │
                  ▼
