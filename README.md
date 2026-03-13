@@ -228,8 +228,6 @@ Les groupes prédits sont comparés à un fichier de référence (`gold_clusters
 | **Precision** | Proportion de paires correctement regroupées |
 | **Recall** | Proportion de vraies variantes retrouvées |
 | **F1-score** | Moyenne harmonique précision / rappel |
-| **False Merge** | Noms distincts mis dans le même groupe |
-| **False Split** | Variantes du même nom dans des groupes séparés |
 
 ### Résumés — `evaluate_summaries.py`
 
