@@ -83,7 +83,7 @@
     <section>
       <h1>Model Comparison Dashboard</h1>
       <p class="sub">Visual summary for the selected grouping models on the test gold set.</p>
-      <div class="cards"><article class="card"><h3>Soundex</h3><p class="score">F1 1.000</p><p>Precision 1.000 · Recall 1.000</p><p>False merge 0.000 · False split 0.000</p></article><article class="card"><h3>SequenceMatcher</h3><p class="score">F1 0.727</p><p>Precision 1.000 · Recall 0.571</p><p>False merge 0.000 · False split 0.429</p></article><article class="card"><h3>Name Similarity</h3><p class="score">F1 0.353</p><p>Precision 1.000 · Recall 0.214</p><p>False merge 0.000 · False split 0.786</p></article></div>
+      <div class="cards"><article class="card"><h3>Soundex</h3><p class="score">F1 1.000</p><p>Precision 1.000 · Recall 1.000</p><p>False merge 0.000 · False split 0.000</p></article><article class="card"><h3>spaCy</h3><p class="score">F1 0.750</p><p>Precision 0.667 · Recall 0.857</p><p>False merge 0.333 · False split 0.143</p></article><article class="card"><h3>Name And Context</h3><p class="score">F1 0.727</p><p>Precision 1.000 · Recall 0.571</p><p>False merge 0.000 · False split 0.429</p></article><article class="card"><h3>SequenceMatcher</h3><p class="score">F1 0.727</p><p>Precision 1.000 · Recall 0.571</p><p>False merge 0.000 · False split 0.429</p></article><article class="card"><h3>Levenshtein</h3><p class="score">F1 0.667</p><p>Precision 1.000 · Recall 0.500</p><p>False merge 0.000 · False split 0.500</p></article><article class="card"><h3>Name Similarity</h3><p class="score">F1 0.353</p><p>Precision 1.000 · Recall 0.214</p><p>False merge 0.000 · False split 0.786</p></article></div>
     </section>
     <section>
       <h2>F1 Ranking</h2>
@@ -113,7 +113,7 @@
             <th>FN</th>
           </tr>
         </thead>
-        <tbody><tr><td>Soundex</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.000</td><td>0.000</td><td>14</td><td>0</td><td>0</td></tr><tr><td>SequenceMatcher</td><td>1.000</td><td>0.571</td><td>0.727</td><td>0.000</td><td>0.429</td><td>8</td><td>0</td><td>6</td></tr><tr><td>Name Similarity</td><td>1.000</td><td>0.214</td><td>0.353</td><td>0.000</td><td>0.786</td><td>3</td><td>0</td><td>11</td></tr></tbody>
+        <tbody><tr><td>Soundex</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.000</td><td>0.000</td><td>14</td><td>0</td><td>0</td></tr><tr><td>spaCy</td><td>0.667</td><td>0.857</td><td>0.750</td><td>0.333</td><td>0.143</td><td>12</td><td>6</td><td>2</td></tr><tr><td>Name And Context</td><td>1.000</td><td>0.571</td><td>0.727</td><td>0.000</td><td>0.429</td><td>8</td><td>0</td><td>6</td></tr><tr><td>SequenceMatcher</td><td>1.000</td><td>0.571</td><td>0.727</td><td>0.000</td><td>0.429</td><td>8</td><td>0</td><td>6</td></tr><tr><td>Levenshtein</td><td>1.000</td><td>0.500</td><td>0.667</td><td>0.000</td><td>0.500</td><td>7</td><td>0</td><td>7</td></tr><tr><td>Name Similarity</td><td>1.000</td><td>0.214</td><td>0.353</td><td>0.000</td><td>0.786</td><td>3</td><td>0</td><td>11</td></tr></tbody>
       </table>
     </section>
   </main>

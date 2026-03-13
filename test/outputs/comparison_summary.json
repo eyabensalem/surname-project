@@ -17,6 +17,40 @@
         }
     },
     {
+        "approach_name": "approach_6_spacy",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\06_spacy\\final_dataset_spacy.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 12,
+            "false_positive_pairs": 6,
+            "false_negative_pairs": 2,
+            "predicted_positive_pairs": 18,
+            "gold_positive_pairs": 14,
+            "precision": 0.666667,
+            "recall": 0.857143,
+            "f1_score": 0.75,
+            "false_merge_rate": 0.333333,
+            "false_split_rate": 0.142857
+        }
+    },
+    {
+        "approach_name": "approach_2_name_and_context",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\02_name_and_context\\final_dataset_name_and_context.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 8,
+            "false_positive_pairs": 0,
+            "false_negative_pairs": 6,
+            "predicted_positive_pairs": 8,
+            "gold_positive_pairs": 14,
+            "precision": 1.0,
+            "recall": 0.571429,
+            "f1_score": 0.727273,
+            "false_merge_rate": 0.0,
+            "false_split_rate": 0.428571
+        }
+    },
+    {
         "approach_name": "approach_3_sequence_matcher",
         "prediction_file": "D:\\Nlp naming project\\test\\outputs\\03_sequence_matcher\\final_dataset_sequence_matcher.json",
         "metrics": {
@@ -31,6 +65,23 @@
             "f1_score": 0.727273,
             "false_merge_rate": 0.0,
             "false_split_rate": 0.428571
+        }
+    },
+    {
+        "approach_name": "approach_4_levenshtein",
+        "prediction_file": "D:\\Nlp naming project\\test\\outputs\\04_levenshtein\\final_dataset_levenshtein.json",
+        "metrics": {
+            "evaluated_name_count": 25,
+            "true_positive_pairs": 7,
+            "false_positive_pairs": 0,
+            "false_negative_pairs": 7,
+            "predicted_positive_pairs": 7,
+            "gold_positive_pairs": 14,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1_score": 0.666667,
+            "false_merge_rate": 0.0,
+            "false_split_rate": 0.5
         }
     },
     {
