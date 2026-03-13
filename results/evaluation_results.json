@@ -1,0 +1,50 @@
+[
+  {
+    "group_id": 1,
+    "reference_summary": "Le nom semble désigner une personne travaillant le métal et peut aussi être lié à une variante de métayer.",
+    "tfidf_scores": {
+      "rouge1_f1": 0.5091,
+      "rougeL_f1": 0.4727
+    },
+    "textrank_scores": {
+      "rouge1_f1": 0.3934,
+      "rougeL_f1": 0.3279
+    },
+    "bart_scores": {
+      "rouge1_f1": 0.3636,
+      "rougeL_f1": 0.3636
+    }
+  },
+  {
+    "group_id": 2,
+    "reference_summary": "Le nom signifie en allemand montagne noire et désigne une personne originaire d’une localité portant ce nom.",
+    "tfidf_scores": {
+      "rouge1_f1": 0.2857,
+      "rougeL_f1": 0.2449
+    },
+    "textrank_scores": {
+      "rouge1_f1": 0.2162,
+      "rougeL_f1": 0.1892
+    },
+    "bart_scores": {
+      "rouge1_f1": 0.4667,
+      "rougeL_f1": 0.4667
+    }
+  },
+  {
+    "group_id": 3,
+    "reference_summary": "Ce nom est un diminutif lié au prénom Henri ou Jean, et en Bretagne il peut aussi signifier le vieux ou l’aîné.",
+    "tfidf_scores": {
+      "rouge1_f1": 0.5263,
+      "rougeL_f1": 0.5
+    },
+    "textrank_scores": {
+      "rouge1_f1": 0.5263,
+      "rougeL_f1": 0.5
+    },
+    "bart_scores": {
+      "rouge1_f1": 0.4815,
+      "rougeL_f1": 0.4444
+    }
+  }
+]

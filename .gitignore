@@ -1,40 +1,34 @@
-# Python
+# Python cache
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
 
 # Virtual environments
 venv/
-.venv/
-env/
-ENV/
+.env/
 
-# IDE / OS
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
 .vscode/
 .idea/
-*.swp
-Thumbs.db
+
+# OS files
 .DS_Store
-
-# Environment files
-.env
-.env.*
-
-# Model and ML caches
-.cache/
-hf_home/
-huggingface/
-
-# Generated data outputs
-data/structured_dataset.csv
-data/structured_dataset.json
-data/cleaned_dataset.json
-data/name_groups.json
-data/final_dataset.json
+Thumbs.db
 
 # Logs
 *.log
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Streamlit
+.streamlit/
+
+# Temporary files
+*.tmp
