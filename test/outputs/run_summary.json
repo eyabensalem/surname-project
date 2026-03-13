@@ -1,0 +1,32 @@
+[
+    {
+        "approach_name": "approach_2_name_and_context",
+        "output_dir": "D:\\Nlp naming project\\test\\outputs\\02_name_and_context",
+        "group_count": 235,
+        "final_group_count": 235
+    },
+    {
+        "approach_name": "approach_3_sequence_matcher",
+        "output_dir": "D:\\Nlp naming project\\test\\outputs\\03_sequence_matcher",
+        "group_count": 240,
+        "final_group_count": 240
+    },
+    {
+        "approach_name": "approach_4_levenshtein",
+        "output_dir": "D:\\Nlp naming project\\test\\outputs\\04_levenshtein",
+        "group_count": 253,
+        "final_group_count": 253
+    },
+    {
+        "approach_name": "approach_5_soundex",
+        "output_dir": "D:\\Nlp naming project\\test\\outputs\\05_soundex",
+        "group_count": 187,
+        "final_group_count": 187
+    },
+    {
+        "approach_name": "approach_6_spacy",
+        "output_dir": "D:\\Nlp naming project\\test\\outputs\\06_spacy",
+        "group_count": 92,
+        "final_group_count": 92
+    }
+]

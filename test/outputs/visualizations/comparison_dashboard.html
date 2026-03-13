@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comparison Dashboard</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --panel: #fffdf8;
+      --line: #d9cfbd;
+      --text: #1f2933;
+      --muted: #5b6570;
+      --accent: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at top left, #fff8ec, var(--bg) 55%);
+      color: var(--text);
+    }
+    main {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 24px auto 48px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(31, 41, 51, 0.06);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 34px; }
+    .sub { margin-top: 8px; color: var(--muted); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, #fffefb, #f8f2e8);
+    }
+    .card .score {
+      margin: 8px 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 14px;
+    }
+    th, td {
+      border-bottom: 1px solid #eadfce;
+      padding: 10px 8px;
+      text-align: left;
+    }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Model Comparison Dashboard</h1>
+      <p class="sub">Visual summary for the selected grouping models on the test gold set.</p>
+      <div class="cards"><article class="card"><h3>Soundex</h3><p class="score">F1 0.024</p><p>Precision 0.417 · Recall 0.012</p><p>False merge 0.583 · False split 0.988</p></article><article class="card"><h3>Levenshtein</h3><p class="score">F1 0.020</p><p>Precision 0.571 · Recall 0.010</p><p>False merge 0.429 · False split 0.990</p></article><article class="card"><h3>spaCy</h3><p class="score">F1 0.016</p><p>Precision 0.046 · Recall 0.010</p><p>False merge 0.954 · False split 0.990</p></article><article class="card"><h3>SequenceMatcher</h3><p class="score">F1 0.015</p><p>Precision 0.600 · Recall 0.007</p><p>False merge 0.400 · False split 0.993</p></article><article class="card"><h3>Name And Context</h3><p class="score">F1 0.010</p><p>Precision 0.333 · Recall 0.005</p><p>False merge 0.667 · False split 0.995</p></article></div>
+    </section>
+    <section>
+      <h2>F1 Ranking</h2>
+      <img src="comparison_f1.svg" alt="F1 ranking chart">
+    </section>
+    <section>
+      <h2>Precision, Recall and F1</h2>
+      <img src="comparison_prf.svg" alt="Precision recall f1 grouped chart">
+    </section>
+    <section>
+      <h2>Error Profile</h2>
+      <img src="comparison_radar.svg" alt="Radar chart for error profile">
+    </section>
+    <section>
+      <h2>Metrics Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1</th>
+            <th>False merge</th>
+            <th>False split</th>
+            <th>TP</th>
+            <th>FP</th>
+            <th>FN</th>
+          </tr>
+        </thead>
+        <tbody><tr><td>Soundex</td><td>0.417</td><td>0.012</td><td>0.024</td><td>0.583</td><td>0.988</td><td>5</td><td>7</td><td>397</td></tr><tr><td>Levenshtein</td><td>0.571</td><td>0.010</td><td>0.020</td><td>0.429</td><td>0.990</td><td>4</td><td>3</td><td>398</td></tr><tr><td>spaCy</td><td>0.046</td><td>0.010</td><td>0.016</td><td>0.954</td><td>0.990</td><td>4</td><td>83</td><td>398</td></tr><tr><td>SequenceMatcher</td><td>0.600</td><td>0.007</td><td>0.015</td><td>0.400</td><td>0.993</td><td>3</td><td>2</td><td>399</td></tr><tr><td>Name And Context</td><td>0.333</td><td>0.005</td><td>0.010</td><td>0.667</td><td>0.995</td><td>2</td><td>4</td><td>400</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+    "approach_name": "approach_3_sequence_matcher",
+    "input_mode": "test_data_json",
+    "input_file": "D:\\Nlp naming project\\test\\data\\test_data.json",
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "spacy_model": "fr_core_news_md",
+    "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "sequence_matcher_threshold": 0.88,
+    "levenshtein_threshold": 0.85,
+    "soundex_threshold": 1.0,
+    "spacy_similarity_threshold": 0.75,
+    "batch_size": 16,
+    "row_count": 279,
+    "unique_name_count": 270,
+    "group_count": 240,
+    "final_group_count": 240,
+    "diagnostics": {
+        "approach": "approach_3_sequence_matcher",
+        "similarity_threshold": 0.88,
+        "total_comparisons": 1787,
+        "accepted_comparisons": 25,
+        "rejected_comparisons": 1762
+    },
+    "output_dir": "D:\\Nlp naming project\\test\\outputs\\03_sequence_matcher",
+    "output_files": {
+        "structured_csv": "structured_dataset_sequence_matcher.csv",
+        "structured_json": "structured_dataset_sequence_matcher.json",
+        "cleaned_json": "cleaned_dataset_sequence_matcher.json",
+        "groups_json": "name_groups_sequence_matcher.json",
+        "final_json": "final_dataset_sequence_matcher.json",
+        "metadata_json": "run_metadata_sequence_matcher.json"
+    }
+}

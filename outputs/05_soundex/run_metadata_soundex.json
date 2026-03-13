@@ -1,0 +1,35 @@
+{
+    "approach_name": "approach_5_soundex",
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "spacy_model": "fr_core_news_md",
+    "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "sequence_matcher_threshold": 0.88,
+    "levenshtein_threshold": 0.85,
+    "soundex_threshold": 1.0,
+    "spacy_similarity_threshold": 0.75,
+    "batch_size": 16,
+    "group_summary_sentence_count": 2,
+    "diagnostics": {
+        "approach": "approach_5_soundex",
+        "similarity_threshold": 1.0,
+        "total_comparisons": 172604,
+        "accepted_comparisons": 9094,
+        "rejected_comparisons": 163510
+    },
+    "input_files": {
+        "names": "D:\\Nlp naming project\\data\\names.json",
+        "origins": "D:\\Nlp naming project\\data\\origins.json"
+    },
+    "output_dir": "D:\\Nlp naming project\\outputs\\05_soundex",
+    "output_files": {
+        "structured_csv": "structured_dataset_soundex.csv",
+        "structured_json": "structured_dataset_soundex.json",
+        "cleaned_json": "cleaned_dataset_soundex.json",
+        "groups_json": "name_groups_soundex.json",
+        "final_json": "final_dataset_soundex.json",
+        "merged_groups_json": "merged_groups_soundex.json",
+        "summaries_json": "group_summaries_soundex.json",
+        "metadata_json": "run_metadata_soundex.json"
+    }
+}

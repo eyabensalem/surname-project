@@ -1,0 +1,19 @@
+{
+    "approach_name": "approach_2_name_and_context",
+    "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+    "similarity_threshold": 0.78,
+    "context_similarity_threshold": 0.78,
+    "batch_size": 16,
+    "diagnostics": {
+        "approach": "approach_2_name_and_context",
+        "similarity_threshold": 0.78,
+        "total_comparisons": 437290,
+        "accepted_comparisons": 2116,
+        "rejected_comparisons": 435174
+    },
+    "input_files": {
+        "names": "D:\\Nlp naming project\\data\\names.json",
+        "origins": "D:\\Nlp naming project\\data\\origins.json"
+    },
+    "output_dir": "D:\\Nlp naming project\\outputs\\02_name_and_context"
+}

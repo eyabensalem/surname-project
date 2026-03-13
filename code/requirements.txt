@@ -2,3 +2,16 @@ Unidecode
 sentence-transformers
 torch
 sentencepiece
+spacy
+numpy
+scikit-learn
+streamlit
+matplotlib
+networkx
+requests
+beautifulsoup4
+pandas
+plotly
+sumy
+rouge-score
+transformers

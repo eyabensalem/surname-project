@@ -1,345 +1,320 @@
-# 🧬 Name Origins NLP Project
+# Name Origins NLP Project
 
-### Analyse automatique des origines de noms et prénoms avec NLP
+Projet NLP de regroupement de variantes de noms de famille et de prenoms, avec generation de resumes, evaluation, scraping et application Streamlit.
 
-## 📌 Aperçu du projet
+## Overview
 
-Ce projet applique des techniques de **Natural Language Processing (NLP)** pour analyser des noms de famille et prénoms et en extraire automatiquement :
+Ce projet combine deux volets :
 
-* leurs **origines**
-* leurs **significations**
-* leurs **variantes**
-* des **résumés automatiques**
+- `noms de famille` : regroupement automatique de variantes de patronymes a partir de `data/names.json` et `data/origins.json`
+- `prenoms` : scraping de fiches, structuration des details, resume des descriptions et regroupement phonetique avec Soundex
 
-Le pipeline inclut également :
+Le pipeline complet produit des fichiers dans `outputs/` et `results/`, puis les affiche dans une application interactive Streamlit.
 
-* la **comparaison de modèles de résumé**
-* l’**évaluation des résultats**
-* des **visualisations**
-* une **application interactive Streamlit**
+## Current project state
 
-L’objectif est de construire un **pipeline NLP complet**, allant du traitement des données jusqu’à une interface utilisateur.
+- Le pipeline principal des noms de famille utilise par defaut `approach_5_soundex`
+- Les sorties principales synchronisees vers l'application sont :
+  - `results/final_dataset.json`
+  - `results/merged_groups.json`
+  - `results/group_summaries.json`
+- Les prenoms sont scrapes dans `results/firstnames_dataset.json`, puis regroupes dans :
+  - `results/firstnames_grouped_soundex.json`
+  - `results/firstnames_group_summaries_soundex.json`
 
----
+## Repository structure
 
-# 🎯 Objectifs du projet
-
-Ce projet vise à :
-
-* regrouper automatiquement les **variantes de noms**
-* générer des **résumés automatiques**
-* comparer plusieurs **modèles NLP**
-* évaluer la **qualité des résumés**
-* extraire les **origines des prénoms**
-* visualiser les **relations entre variantes**
-* construire une **application interactive**
-
----
-
-# 🧠 Pipeline NLP
-
-Le projet suit le pipeline suivant :
-
-```
-Dataset noms
-     ↓
-Nettoyage et regroupement des variantes
-     ↓
-Fusion des groupes
-     ↓
-Résumé automatique (Transformers)
-     ↓
-Comparaison des modèles
-     ↓
-Évaluation
-     ↓
-Visualisation
-     ↓
-Application Streamlit
-```
-
----
-
-# 🧩 Structure du projet
-
-```
-surname-project
-│
-├── data
-│   └── origins.json
-│
-├── results
-│   ├── merged_groups.json
-│   ├── group_summaries.json
-│   ├── model_comparison.json
-│   ├── evaluation_results.json
-│   ├── surname_variant_graph.png
-│   ├── model_scores.png
-│   ├── firstnames_dataset.json
-│   └── firstnames_summaries.json
-│
-├── src
-│   ├── config.py
-│   ├── text_grouping.py
-│   ├── summarization.py
-│   ├── compare_summarizers.py
-│   ├── evaluate_summaries.py
-│   ├── visualize_variants.py
-│   ├── plot_model_scores.py
-│   ├── scrape_firstname_list.py
-│   ├── scrape_firstname_details.py
-│   ├── summarize_firstnames.py
-│   └── run_all.py
-│
-├── app
-│   └── streamlit_app.py
-│
-└── README.md
-```
-
----
-
-# ⚙️ Installation
-
-## 1️⃣ Cloner le projet
-
-```bash
-git clone https://github.com/eyabensalem/surname-project
-cd name-origins-nlp
-```
-
----
-
-## 2️⃣ Créer un environnement virtuel
-
-```bash
-python -m venv venv
-```
-
-Activer l'environnement :
-
-Windows :
-
-```
-venv\Scripts\activate
-```
-
-Linux / Mac :
-
-```
-source venv/bin/activate
-```
-
----
-
-## 3️⃣ Installer les dépendances
-
-```
-pip install -r requirements.txt
-```
-
----
-
-# 🚀 Exécution du pipeline complet
-
-Le pipeline peut être exécuté avec :
-
-```
-python src/run_all.py
-```
-
-Ce script exécute automatiquement :
-
-1️⃣ regroupement des variantes
-2️⃣ génération des résumés
-3️⃣ comparaison des modèles
-4️⃣ évaluation
-5️⃣ génération des visualisations
-6️⃣ scraping des prénoms
-7️⃣ résumé des prénoms
-
-Les résultats sont sauvegardés dans :
-
-```
+```text
+app/
+  streamlit_app.py              # application finale
+code/
+  main.py                       # pipeline principal de regroupement des noms
+data/
+  names.json                    # noms de famille bruts
+  origins.json                  # textes d'origine associes
+outputs/
+  01_name_similarity/
+  02_name_and_context/
+  03_sequence_matcher/
+  04_levenshtein/
+  05_soundex/
+  06_spacy/
 results/
+  final_dataset.json
+  merged_groups.json
+  group_summaries.json
+  firstnames_list.json
+  firstnames_dataset.json
+  firstnames_summaries.json
+  firstnames_grouped_soundex.json
+  firstnames_group_summaries_soundex.json
+src/
+  config.py
+  run_all.py
+  compare_summarizers.py
+  evaluate_summaries.py
+  plot_model_scores.py
+  scrape_firstname_list.py
+  scrape_firstname_details.py
+  summarize_firstnames.py
+  group_firstnames_soundex.py
+test/
+  data/
+    test_data.json
+    gold_clusters.template.json
+  run_test_approaches.py
+  compare_test_metrics.py
 ```
 
----
+## Main pipeline
 
-# 🤖 Modèles NLP utilisés
+### 1. Noms de famille
 
-Le projet utilise des modèles **Transformers (HuggingFace)** pour générer les résumés.
+Le pipeline principal est dans `code/main.py`.
 
-Exemples de modèles testés :
+Il :
 
-* BART
-* T5
-* DistilBART
+1. charge les noms et leurs textes d'origine
+2. normalise les noms
+3. applique une approche de regroupement
+4. produit un `final_dataset_<approach>.json`
+5. fusionne les textes du groupe
+6. genere un resume de groupe
 
-Ces modèles permettent de transformer automatiquement des descriptions longues en résumés courts.
+Par defaut, `src/run_all.py` lance `code/main.py` avec `approach_5_soundex`, puis copie les sorties Soundex vers `results/` pour l'application.
 
----
+### 2. Prenoms
 
-# 📊 Visualisations
+Le pipeline prenoms est dans `src/` :
 
-Deux visualisations principales sont générées.
+1. `scrape_firstname_list.py` recupere la liste des prenoms
+2. `scrape_firstname_details.py` recupere les details de chaque fiche
+3. `summarize_firstnames.py` genere des resumes simples
+4. `group_firstnames_soundex.py` regroupe les prenoms par Soundex et cree des resumes de groupe
 
-## Graphe des variantes de noms
+### 3. Application
 
-Ce graphe montre les relations entre les variantes d’un même nom.
+`app/streamlit_app.py` affiche :
 
+- une recherche sur les groupes de noms de famille
+- une recherche sur les groupes de prenoms
+- des visualisations d'evaluation et de comparaison
 
+## Shared grouping principle
 
+Tous les modeles de regroupement suivent la meme logique metier :
 
-![Surname](results/surname_variant_graph.png)
+1. normaliser les noms
+2. comparer seulement des candidats plausibles
+3. mesurer une proximite entre deux noms
+4. fusionner les noms si la preuve est suffisante
+5. construire un groupe unique pour chaque variante
 
+Autrement dit, tous les modeles essaient de repondre a la meme question :
 
----
+> Est-ce que ces deux formes renvoient au meme patronyme malgre des variations d'ecriture, de prononciation ou de contexte ?
 
-## Comparaison des modèles
+Ce qui change d'un modele a l'autre, c'est le type de similarite utilise.
 
-Ce graphique compare les performances des différents modèles de résumé.
+## Grouping models
 
+### approach_1_name_similarity
 
+Principe :
 
-![Model_score](results/model_scores.png)
+- transforme chaque nom normalise en embedding avec `SentenceTransformer`
+- compare les vecteurs avec une similarite cosinus
+- groupe les noms si leur similarite depasse un seuil
 
+Idee :
 
----
+- utile si deux noms ont une forme generale proche
+- reste faible sur des variantes purement orthographiques fines
 
-# 🔎 Extraction des prénoms
+### approach_2_name_and_context
 
-Un scraping est réalisé pour récupérer :
+Principe :
 
-* origine
-* signification
-* description
+- construit un texte `nom + descriptions`
+- encode ce texte avec `SentenceTransformer`
+- compare les embeddings par similarite cosinus
 
-Puis un résumé automatique est généré.
+Idee :
 
-Exemple :
+- utilise a la fois la forme du nom et le contexte textuel
+- peut mieux capter des noms proches si leurs descriptions racontent la meme origine
+
+### approach_3_sequence_matcher
+
+Principe :
+
+- compare directement deux chaines avec `difflib.SequenceMatcher`
+- calcule un ratio de ressemblance caractere par caractere
+
+Idee :
+
+- simple et interpretable
+- bon pour des variantes orthographiques courtes
+
+### approach_4_levenshtein
+
+Principe :
+
+- calcule combien d'operations d'edition il faut pour passer d'un nom a l'autre
+- convertit cette distance en ratio de similarite
+
+Idee :
+
+- tres adapte aux fautes, ajouts, suppressions ou substitutions mineures
+- plus strict qu'un modele semantique
+
+### approach_5_soundex
+
+Principe :
+
+- transforme chaque nom en code phonetique Soundex
+- groupe deux noms s'ils ont le meme code
+
+Idee :
+
+- specialement utile pour les variantes qui se prononcent de facon proche
+- c'est l'approche retenue comme pipeline principal du projet
+
+### approach_6_spacy
+
+Principe :
+
+- cree un document spaCy a partir du nom et du contexte
+- compare les documents avec `doc.similarity`
+
+Idee :
+
+- cherche une proximite vectorielle plus large
+- peut retrouver des liens contextuels, mais peut aussi faire plus de sur-fusions
+
+## Output format for surname grouping
+
+Chaque approche produit un fichier `final_dataset_<approach>.json` de cette forme :
 
 ```json
-{
-  "first_name": "Abel",
-  "origin": "Hébraïque",
-  "meaning": "souffle ou vapeur",
-  "summary": "Le prénom Abel trouve ses origines dans la Bible et possède des racines hébraïques."
-}
+[
+  {
+    "group_id": 1,
+    "variants": ["nom_a", "nom_b"],
+    "origin_ids": ["T00001", "T00002"],
+    "origin_texts": ["texte 1", "texte 2"]
+  }
+]
 ```
 
----
+## Surname summary generation
 
-# 🖥 Application interactive
+En plus du regroupement, le projet genere des resumes de groupes de noms.
 
-Une application **Streamlit** permet de rechercher :
+Dans le pipeline principal, le resume est extractif :
 
-* un **nom de famille**
-* un **prénom**
+- decoupage en phrases
+- score par mots-cles metier
+- ponderation TF-IDF
+- bonus de position
+- selection des meilleures phrases
 
-et d'afficher :
+Les fichiers produits sont :
 
-* les variantes
-* l'origine
-* le résumé
-* le score de confiance
+- `merged_groups_<approach>.json`
+- `group_summaries_<approach>.json`
 
----
+## Summarization models compared in src/
 
-## Lancer l'application
+Le projet compare aussi trois modeles de resume sur les groupes fusionnes :
 
+### TF-IDF + keyword scoring
+
+- resume extractif
+- selectionne les phrases les plus informatives selon TF-IDF et des mots-cles metier
+
+### TextRank
+
+- resume extractif base sur un graphe de phrases
+- garde les phrases centrales du texte
+
+### DistilBART
+
+- resume abstractive via un modele transformer pre-entraine
+- utilise `sshleifer/distilbart-cnn-12-6`
+
+## Evaluation
+
+### Evaluation des modeles de regroupement
+
+Les approches de regroupement sont comparees dans `test/` :
+
+- `test/run_test_approaches.py` genere les sorties sur `test/data/test_data.json`
+- `test/compare_test_metrics.py` compare les predictions au gold de `test/data/gold_clusters.template.json`
+
+Les metriques calculees sont :
+
+- precision
+- recall
+- F1
+- false merge rate
+- false split rate
+- TP / FP / FN
+
+Cette evaluation est `pairwise` :
+
+- on compare les paires de noms qui devraient etre dans le meme groupe
+- pas seulement les groupes visuellement
+
+### Evaluation des modeles de resume
+
+`src/evaluate_summaries.py` evalue les resumes avec :
+
+- `ROUGE-1`
+- `ROUGE-L`
+
+sur quelques resumes de reference manuels.
+
+## Installation
+
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+python -m pip install -r requirements.txt
 ```
-streamlit run app/streamlit_app.py
+
+## Run the project
+
+### Pipeline complet
+
+```powershell
+.\venv\Scripts\python.exe src\run_all.py
 ```
 
-L'application sera disponible sur :
+### Application Streamlit
 
+```powershell
+.\venv\Scripts\python.exe -m streamlit run app\streamlit_app.py
 ```
-http://localhost:8501
+
+### Benchmark des modeles de regroupement
+
+```powershell
+.\venv\Scripts\python.exe test\run_test_approaches.py
+.\venv\Scripts\python.exe test\compare_test_metrics.py
 ```
 
----
+## Important notes
 
-# 📷 Interface de l'application
-![Interface](screenshots/page1.png)
+- `src/run_all.py` lance d'abord le pipeline principal des noms de famille avec Soundex
+- l'application lit ensuite les fichiers de `results/`
+- pour les prenoms, il faut regenerer les sorties derivees apres un nouveau scraping si `firstnames_dataset.json` change
+- les performances des modeles dependent fortement de la qualite du gold de reference
 
-### Recherche de nom de famille
+## Main files to mention in a report
 
-![Interface](screenshots/page2.png)
-
----
-
-### Recherche de prénom
-
-![Interface](screenshots/page3.png)
-
-
----
-
-### Visualisations
-
-![Interface](screenshots/page4.png)
-![Interface](screenshots/page5.png)
-
----
-
-# 📈 Résultats
-
-Le projet permet :
-
-✔ regroupement automatique des variantes
-✔ génération de résumés automatiques
-✔ extraction d'informations sur les prénoms
-✔ comparaison de modèles NLP
-✔ visualisation des relations entre noms
-✔ application interactive
-
----
-
-# 🛠 Technologies utilisées
-
-* Python
-* HuggingFace Transformers
-* Streamlit
-* BeautifulSoup
-* NetworkX
-* Matplotlib
-* Requests
-* JSON
-
----
-
-# 🔮 Améliorations possibles
-
-Améliorations possibles du projet :
-
-* ajouter plus de sources de données
-* améliorer l'extraction des origines
-* utiliser des **embeddings plus avancés**
-* ajouter une **recherche fuzzy**
-* déployer l'application en ligne
-
----
-
-# 👩‍💻 Auteur
-
-Eya BEN SALEM
-Projet réalisé dans le cadre du **Master Big Data & Intelligence Artificielle**.
-
----
-
-# ⭐ Remarque
-
-Les résultats dépendent des données disponibles et des modèles utilisés.
-
-Ce projet illustre l'utilisation combinée de :
-
-* **scraping**
-* **NLP**
-* **visualisation**
-* **application interactive**
-
-dans un pipeline complet.
-
----
-
+- `code/main.py` : coeur du regroupement des noms de famille
+- `src/run_all.py` : orchestration du pipeline final
+- `app/streamlit_app.py` : interface utilisateur
+- `test/run_test_approaches.py` : benchmark des approches de regroupement
+- `test/compare_test_metrics.py` : evaluation pairwise des regroupements
