@@ -128,7 +128,7 @@ Le pipeline principal transforme des noms bruts en groupes enrichis avec résum�
 │  outputs/05_soundex/            │
 │  ├── final_dataset_soundex.json │
 │  ├── merged_groups_soundex.json │
-│  └── group_summaries_soundex.json│
+│  └── group_summaries.json       │
 └────────────────┬────────────────┘
                  │
                  ▼
@@ -161,13 +161,13 @@ scrape_firstname_details.py
 firstnames_dataset.json
         │
         ▼
-summarize_firstnames.py
-        │
-        ▼
 group_firstnames_soundex.py
         │
         ▼
 firstnames_grouped_soundex.json
+        │
+        ▼
+summarize_firstnames.py
         │
         ▼
 firstnames_group_summaries_soundex.json
