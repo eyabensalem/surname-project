@@ -668,31 +668,31 @@ with tab3:
         st.info("Le graphique d'evaluation des modeles de regroupement textuel n'est pas disponible.")
     # ── Origins visualization ─────────────────────────────
 
-    if firstname_dataset:
-        st.markdown("### Répartition des origines des prénoms")
+    # if firstname_dataset:
+    #     st.markdown("### Répartition des origines des prénoms")
 
-        origin_rows = []
+    #     origin_rows = []
 
-        for item in firstname_dataset:
-            origin = item.get("origin", "").strip()
-            if origin:
-                origin_rows.append({"origin": origin})
+    #     for item in firstname_dataset:
+    #         origin = item.get("origin", "").strip()
+    #         if origin:
+    #             origin_rows.append({"origin": origin})
 
-        if origin_rows:
-            df = pd.DataFrame(origin_rows)
+    #     if origin_rows:
+    #         df = pd.DataFrame(origin_rows)
 
-            origin_counts = (
-                df.groupby("origin")
-                .size()
-                .reset_index(name="count")
-                .sort_values("count", ascending=False)
-            )
+    #         origin_counts = (
+    #             df.groupby("origin")
+    #             .size()
+    #             .reset_index(name="count")
+    #             .sort_values("count", ascending=False)
+    #         )
 
-            fig = px.bar(
-                origin_counts,
-                x="origin",
-                y="count",
-                title="Nombre de prénoms par origine"
-            )
+    #         fig = px.bar(
+    #             origin_counts,
+    #             x="origin",
+    #             y="count",
+    #             title="Nombre de prénoms par origine"
+    #         )
 
-            st.plotly_chart(fig, width="stretch")
+    #         st.plotly_chart(fig, width="stretch")
