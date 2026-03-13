@@ -227,39 +227,34 @@ app/streamlit_app.py
 
 ## 7. Modeles de regroupement
 
-Le principe commun de tous les modeles est simple :
+Le principe commun des modeles compares est simple :
 
 - comparer deux noms
 - mesurer leur proximite
 - les mettre dans le meme groupe s'ils semblent representer la meme variante
 
-### 1. Name Similarity
-
-- compare les noms avec des embeddings
-- cherche une similarite globale entre les formes
-
-### 2. Name and Context
+### 1. Name and Context
 
 - compare le nom
 - utilise aussi le texte descriptif associe
 
-### 3. Sequence Matcher
+### 2. Sequence Matcher
 
 - compare directement les caracteres des deux noms
 - mesure leur ressemblance visuelle
 
-### 4. Levenshtein
+### 3. Levenshtein
 
 - calcule le nombre de modifications necessaires pour passer d'un nom a l'autre
 
-### 5. Soundex
+### 4. Soundex
 
 - compare la prononciation approximative des noms
 - deux noms proches phonetiquement peuvent etre regroupes
 
 C'est le modele principal choisi dans ce projet.
 
-### 6. spaCy
+### 5. spaCy
 
 - utilise une similarite vectorielle sur le nom et son contexte
 
@@ -314,6 +309,22 @@ Metriques utilisees :
 Elle est faite avec ROUGE dans :
 
 - `src/evaluate_summaries.py`
+
+### Visualisation des comparaisons de modeles
+
+Les graphiques ci-dessous sont generes par `test/compare_test_metrics.py` pour les approches retenues dans la comparaison finale.
+
+#### Classement par F1-score
+
+![Classement F1 des modeles](test/outputs/visualizations/comparison_f1.svg)
+
+#### Comparaison precision / recall / F1
+
+![Comparaison precision recall F1 des modeles](test/outputs/visualizations/comparison_prf.svg)
+
+#### Profil d'erreurs
+
+![Radar des erreurs des modeles](test/outputs/visualizations/comparison_radar.svg)
 
 ---
 
