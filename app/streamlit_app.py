@@ -6,22 +6,99 @@ import unicodedata
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-RESULTS_DIR = Path("results")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+RESULTS_DIR = BASE_DIR / "results"
+TEST_OUTPUTS_DIR = BASE_DIR / "test" / "outputs"
+TEST_VISUALS_DIR = TEST_OUTPUTS_DIR / "visualizations"
+PRIMARY_SURNAME_SUMMARIES_FILE = RESULTS_DIR / "group_summaries.json"
+FALLBACK_SURNAME_SUMMARIES_FILE = BASE_DIR / "outputs" / "05_soundex" / "group_summaries_soundex.json"
+COMPARISON_SUMMARY_FILE = TEST_OUTPUTS_DIR / "comparison_summary.json"
+PRIMARY_FIRSTNAME_GROUP_SUMMARIES_FILE = RESULTS_DIR / "firstnames_group_summaries_soundex.json"
+LEGACY_FIRSTNAME_SUMMARIES_FILE = RESULTS_DIR / "firstnames_summaries.json"
+
+
+def load_json(path: Path):
+    with path.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def resolve_existing_file(*paths: Path):
+    for path in paths:
+        if path.exists():
+            return path
+    return None
+
+
 def normalize_text(text: str) -> str:
     text = text.strip().lower()
     text = unicodedata.normalize("NFD", text)
     text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
     return text
+
+
+def soundex(text: str) -> str:
+    normalized = normalize_text(text)
+    if not normalized:
+        return ""
+
+    letters = "".join(char for char in normalized if char.isalpha())
+    if not letters:
+        return ""
+
+    first_letter = letters[0].upper()
+    mapping = {
+        "b": "1",
+        "f": "1",
+        "p": "1",
+        "v": "1",
+        "c": "2",
+        "g": "2",
+        "j": "2",
+        "k": "2",
+        "q": "2",
+        "s": "2",
+        "x": "2",
+        "z": "2",
+        "d": "3",
+        "t": "3",
+        "l": "4",
+        "m": "5",
+        "n": "5",
+        "r": "6",
+    }
+
+    encoded = [first_letter]
+    previous_digit = mapping.get(letters[0], "")
+    for char in letters[1:]:
+        digit = mapping.get(char, "")
+        if digit and digit != previous_digit:
+            encoded.append(digit)
+        previous_digit = digit
+
+    code = "".join(encoded)[:4]
+    return code.ljust(4, "0")
+
+
 # Load data
-with open(RESULTS_DIR / "group_summaries.json", "r", encoding="utf-8") as f:
-    group_summaries = json.load(f)
+surname_summaries_file = resolve_existing_file(
+    PRIMARY_SURNAME_SUMMARIES_FILE,
+    FALLBACK_SURNAME_SUMMARIES_FILE,
+)
+if surname_summaries_file is None:
+    raise FileNotFoundError(
+        "No surname summaries found. Run the pipeline first or provide group summaries in results/."
+    )
+
+group_summaries = load_json(surname_summaries_file)
+
+
 # Load full firstname dataset for visualizations
 firstname_dataset = []
 dataset_file = RESULTS_DIR / "firstnames_dataset.json"
 
 if dataset_file.exists():
-    with open(dataset_file, "r", encoding="utf-8") as f:
-        firstname_dataset = json.load(f)
+    firstname_dataset = load_json(dataset_file)
 
 # Build list of surname variants
 surname_variant_rows = []
@@ -56,10 +133,18 @@ def build_surname_embeddings(rows):
 
 
 surname_embeddings = build_surname_embeddings(surname_variant_rows)
-firstname_file = RESULTS_DIR / "firstnames_summaries.json"
+firstname_group_summaries = []
+firstname_group_file = resolve_existing_file(PRIMARY_FIRSTNAME_GROUP_SUMMARIES_FILE)
+if firstname_group_file is not None:
+    firstname_group_summaries = load_json(firstname_group_file)
+
+firstname_file = LEGACY_FIRSTNAME_SUMMARIES_FILE
 if firstname_file.exists():
-    with open(firstname_file, "r", encoding="utf-8") as f:
-        firstname_summaries = json.load(f)
+    firstname_summaries = load_json(firstname_file)
+
+comparison_summary = []
+if COMPARISON_SUMMARY_FILE.exists():
+    comparison_summary = load_json(COMPARISON_SUMMARY_FILE)
 
 st.set_page_config(
     page_title="Origines des Noms",
@@ -417,6 +502,70 @@ def semantic_search_surname(query: str, top_k: int = 3):
         )
 
     return matches
+
+
+def search_firstname_groups(query: str, top_k: int = 3):
+    query_norm = normalize_text(query)
+    query_soundex = soundex(query)
+    matches = []
+
+    for group in firstname_group_summaries:
+        variants = group.get("variants", [])
+        normalized_variants = [normalize_text(variant) for variant in variants]
+
+        matched_variant = None
+        priority = -1
+
+        if query_norm in normalized_variants:
+            matched_variant = variants[normalized_variants.index(query_norm)]
+            priority = 3
+        elif any(variant_norm.startswith(query_norm) or query_norm.startswith(variant_norm) for variant_norm in normalized_variants):
+            match_index = next(
+                index
+                for index, variant_norm in enumerate(normalized_variants)
+                if variant_norm.startswith(query_norm) or query_norm.startswith(variant_norm)
+            )
+            matched_variant = variants[match_index]
+            priority = 2
+        elif query_soundex and query_soundex == group.get("soundex_code"):
+            matched_variant = variants[0] if variants else group.get("display_name", "")
+            priority = 1
+
+        if priority < 0:
+            continue
+
+        matches.append(
+            {
+                "priority": priority,
+                "group": group,
+                "matched_variant": matched_variant,
+                "distance": abs(len(query_norm) - len(normalize_text(matched_variant))) if matched_variant else 99,
+            }
+        )
+
+    matches.sort(key=lambda item: (-item["priority"], item["distance"], item["group"].get("display_name", "")))
+    return matches[:top_k]
+
+
+def build_comparison_dataframe(summary_items):
+    rows = []
+    for item in summary_items:
+        metrics = item.get("metrics", {})
+        rows.append(
+            {
+                "Approach": item.get("approach_name", ""),
+                "Precision": metrics.get("precision"),
+                "Recall": metrics.get("recall"),
+                "F1": metrics.get("f1_score"),
+                "False Merge": metrics.get("false_merge_rate"),
+                "False Split": metrics.get("false_split_rate"),
+                "TP": metrics.get("true_positive_pairs"),
+                "FP": metrics.get("false_positive_pairs"),
+                "FN": metrics.get("false_negative_pairs"),
+            }
+        )
+
+    return pd.DataFrame(rows)
 # ── Tabs ───────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🏰  Noms de Famille", "📜  Prénoms", "🗺  Visualisations"])
 
@@ -455,43 +604,68 @@ with tab2:
 
     if query_first:
         found = False
-        for item in firstname_summaries:
-            if query_first.lower() == item.get("first_name", "").lower():
+
+        if firstname_group_summaries:
+            matches = search_firstname_groups(query_first, top_k=3)
+            for match in matches:
                 found = True
+                item = match["group"]
+                variants = item.get("variants", [])
+                pills = "".join(f'<span class="variant-pill">{v}</span>' for v in variants)
+                origins = ", ".join(item.get("origins", [])) or "Non renseignee"
+                meanings = ", ".join(item.get("meanings", [])[:3]) or "Non renseignee"
                 score = item.get("quality_score", "N/A")
                 summary = item.get("summary", "")
-                name = item.get("first_name", "")
+                label = item.get("display_name", "") or match["matched_variant"]
+                matched_variant = match["matched_variant"]
+                soundex_code = item.get("soundex_code", "")
+
                 st.markdown(f"""
                 <div class="result-card">
-                  <h3>{name}</h3>
+                  <h3>{label}</h3>
+                  <div style="margin-bottom:0.6rem">{pills}</div>
+                  <p><strong>Variante retrouvee :</strong> {matched_variant}</p>
+                  <p><strong>Code Soundex :</strong> {soundex_code}</p>
+                  <p><strong>Origine(s) :</strong> {origins}</p>
+                  <p><strong>Signification(s) :</strong> {meanings}</p>
                   <p class="summary-text">{summary}</p>
-                  <span class="score-badge">Score qualité : {score}</span>
+                  <span class="score-badge">Score qualite : {score}</span>
                 </div>
                 """, unsafe_allow_html=True)
+        else:
+            for item in firstname_summaries:
+                if query_first.lower() == item.get("first_name", "").lower():
+                    found = True
+                    score = item.get("quality_score", "N/A")
+                    summary = item.get("summary", "")
+                    name = item.get("first_name", "")
+                    st.markdown(f"""
+                    <div class="result-card">
+                      <h3>{name}</h3>
+                      <p class="summary-text">{summary}</p>
+                      <span class="score-badge">Score qualité : {score}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
         if not found:
             st.warning("Aucun prénom correspondant trouvé dans notre corpus.")
 
 with tab3:
     st.markdown('<p class="tab-header">Visualisations générées</p>', unsafe_allow_html=True)
 
-    graph_file = RESULTS_DIR / "surname_variant_graph.png"
     score_file = RESULTS_DIR / "model_scores.png"
+    comparison_prf_file = TEST_VISUALS_DIR / "comparison_prf.svg"
 
-    col1, col2 = st.columns(2, gap="large")
+    if score_file.exists():
+        st.markdown("### Comparaison des scores des modèles de résumé de texte")
+        st.image(str(score_file), use_container_width=True)
+    else:
+        st.info("Scores non disponibles.")
 
-    with col1:
-        if graph_file.exists():
-            st.markdown("**Graphe des variantes**")
-            st.image(str(graph_file), use_container_width=True)
-        else:
-            st.info("Graphe non disponible.")
-
-    with col2:
-        if score_file.exists():
-            st.markdown("**Comparaison des scores**")
-            st.image(str(score_file), use_container_width=True)
-        else:
-            st.info("Scores non disponibles.")
+    if comparison_prf_file.exists():
+        st.markdown("### Evaluation des modèles de regroupement des noms de famille")
+        st.image(str(comparison_prf_file), use_container_width=True)
+    else:
+        st.info("Le graphique d'evaluation des modeles de regroupement textuel n'est pas disponible.")
     # ── Origins visualization ─────────────────────────────
 
     if firstname_dataset:

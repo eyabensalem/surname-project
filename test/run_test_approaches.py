@@ -37,6 +37,13 @@ APPROACH_FILE_SUFFIXES = {
     "approach_5_soundex": "soundex",
     "approach_6_spacy": "spacy",
 }
+DEFAULT_APPROACHES = [
+    "approach_2_name_and_context",
+    "approach_3_sequence_matcher",
+    "approach_4_levenshtein",
+    "approach_5_soundex",
+    "approach_6_spacy",
+]
 
 MODEL_NAME = os.getenv("HF_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
 SPACY_MODEL = os.getenv("SPACY_MODEL", "fr_core_news_md")
@@ -660,7 +667,7 @@ def parse_args():
     parser.add_argument(
         "--approaches",
         nargs="+",
-        default=list(APPROACH_DIRECTORIES),
+        default=DEFAULT_APPROACHES,
         help="Approach names to run.",
     )
     return parser.parse_args()

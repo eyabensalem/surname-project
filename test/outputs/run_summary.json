@@ -1,11 +1,5 @@
 [
     {
-        "approach_name": "approach_1_name_similarity",
-        "output_dir": "D:\\Nlp naming project\\test\\outputs\\01_name_similarity",
-        "group_count": 219,
-        "final_group_count": 219
-    },
-    {
         "approach_name": "approach_2_name_and_context",
         "output_dir": "D:\\Nlp naming project\\test\\outputs\\02_name_and_context",
         "group_count": 235,

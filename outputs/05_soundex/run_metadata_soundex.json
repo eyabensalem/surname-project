@@ -9,6 +9,7 @@
     "soundex_threshold": 1.0,
     "spacy_similarity_threshold": 0.75,
     "batch_size": 16,
+    "group_summary_sentence_count": 2,
     "diagnostics": {
         "approach": "approach_5_soundex",
         "similarity_threshold": 1.0,
@@ -27,6 +28,8 @@
         "cleaned_json": "cleaned_dataset_soundex.json",
         "groups_json": "name_groups_soundex.json",
         "final_json": "final_dataset_soundex.json",
+        "merged_groups_json": "merged_groups_soundex.json",
+        "summaries_json": "group_summaries_soundex.json",
         "metadata_json": "run_metadata_soundex.json"
     }
 }

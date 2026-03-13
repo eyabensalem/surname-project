@@ -9,8 +9,10 @@ from pathlib import Path
 os.environ.setdefault("USE_TF", "0")
 os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 
+import numpy as np
 import spacy
 from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from unidecode import unidecode
 
 
@@ -43,6 +45,23 @@ LEVENSHTEIN_THRESHOLD = float(os.getenv("LEVENSHTEIN_THRESHOLD", "0.85"))
 SOUNDEX_THRESHOLD = float(os.getenv("SOUNDEX_THRESHOLD", "1.0"))
 SPACY_SIMILARITY_THRESHOLD = float(os.getenv("SPACY_SIMILARITY_THRESHOLD", "0.75"))
 BATCH_SIZE = int(os.getenv("EMBEDDING_BATCH_SIZE", "16"))
+SUMMARY_TOP_N = int(os.getenv("GROUP_SUMMARY_SENTENCE_COUNT", "2"))
+
+IMPORTANT_SUMMARY_KEYWORDS = [
+    "signifie",
+    "designe",
+    "variante",
+    "variantes",
+    "forme",
+    "formes",
+    "derive",
+    "derives",
+    "origine",
+    "originaire",
+    "toponyme",
+    "prenom",
+    "nom",
+]
 
 
 def load_json(path: Path):
@@ -89,6 +108,8 @@ def build_output_filenames() -> dict[str, str]:
         "cleaned_json": f"cleaned_dataset_{suffix}.json",
         "groups_json": f"name_groups_{suffix}.json",
         "final_json": f"final_dataset_{suffix}.json",
+        "merged_groups_json": f"merged_groups_{suffix}.json",
+        "summaries_json": f"group_summaries_{suffix}.json",
         "metadata_json": f"run_metadata_{suffix}.json",
     }
 
@@ -98,6 +119,20 @@ def normalize_text(text: str) -> str:
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
+
+
+def clean_summary_text(text: str) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    text = text.replace(" .", ".")
+    text = text.replace(" ,", ",")
+    text = text.replace(" :", ":")
+    text = text.replace(" ;", ";")
+    return text
+
+
+def split_sentences(text: str) -> list[str]:
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    return [sentence.strip() for sentence in sentences if sentence.strip()]
 
 
 def tokenize(text: str) -> list[str]:
@@ -552,6 +587,122 @@ def build_final_dataset(cleaned_rows: list[dict], normalized_to_group: dict[str,
     return final_dataset
 
 
+def build_merged_groups(final_dataset: list[dict], origins: dict[str, str]) -> list[dict]:
+    merged_groups = []
+    for group in final_dataset:
+        origin_ids = group.get("origin_ids", [])
+        texts = [origins[origin_id] for origin_id in origin_ids if origins.get(origin_id)]
+        merged_groups.append(
+            {
+                "group_id": group.get("group_id"),
+                "variants": group.get("variants", []),
+                "origin_ids": origin_ids,
+                "origin_texts": texts,
+                "merged_text": " ".join(texts),
+            }
+        )
+    return merged_groups
+
+
+def compute_keyword_score(sentence: str) -> float:
+    lowered = normalize_text(sentence)
+    score = 0.0
+
+    for keyword in IMPORTANT_SUMMARY_KEYWORDS:
+        if keyword in lowered:
+            score += 2.0
+
+    if "signifie" in lowered:
+        score += 6.0
+    if "variante" in lowered or "variantes" in lowered:
+        score += 2.5
+    if "designe" in lowered:
+        score += 2.5
+    if lowered.startswith("le nom signifie"):
+        score += 4.0
+    if "prenom" in lowered:
+        score += 2.0
+
+    return score
+
+
+def compute_tfidf_scores(sentences: list[str]) -> np.ndarray:
+    if not sentences:
+        return np.array([])
+
+    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+    matrix = vectorizer.fit_transform(sentences)
+    return np.asarray(matrix.sum(axis=1)).ravel()
+
+
+def rank_sentences(sentences: list[str]) -> list[tuple[int, float]]:
+    if not sentences:
+        return []
+
+    tfidf_scores = compute_tfidf_scores(sentences)
+    if len(tfidf_scores) > 0 and tfidf_scores.max() > 0:
+        normalized_tfidf = tfidf_scores / tfidf_scores.max()
+    else:
+        normalized_tfidf = tfidf_scores
+
+    ranked = []
+    for index, sentence in enumerate(sentences):
+        hybrid_score = compute_keyword_score(sentence) + float(normalized_tfidf[index])
+        if index == 0:
+            hybrid_score += 1.5
+        if index == 1:
+            hybrid_score += 0.5
+
+        length = max(len(sentence.split()), 1)
+        hybrid_score -= length / 100
+        ranked.append((index, hybrid_score))
+
+    return ranked
+
+
+def compute_summary_confidence(sentences: list[str], ranked: list[tuple[int, float]], top_n: int) -> float:
+    if not sentences or not ranked:
+        return 0.0
+
+    best_scores = sorted((score for _, score in ranked), reverse=True)[:top_n]
+    if not best_scores:
+        return 0.0
+
+    confidence = sum(best_scores) / len(best_scores)
+    return round(min(confidence / 10, 1.0), 3)
+
+
+def summarize_text(text: str, top_n: int) -> str:
+    sentences = split_sentences(text)
+    if not sentences:
+        return ""
+    if len(sentences) <= top_n:
+        return clean_summary_text(" ".join(sentences))
+
+    ranked = rank_sentences(sentences)
+    top_indices = sorted(index for index, _ in sorted(ranked, key=lambda item: item[1], reverse=True)[:top_n])
+    return clean_summary_text(" ".join(sentences[index] for index in top_indices))
+
+
+def build_group_summaries(merged_groups: list[dict], top_n: int) -> list[dict]:
+    summaries = []
+    for group in merged_groups:
+        merged_text = group.get("merged_text", "")
+        sentences = split_sentences(merged_text)
+        ranked = rank_sentences(sentences)
+        summaries.append(
+            {
+                "group_id": group.get("group_id"),
+                "variants": group.get("variants", []),
+                "origin_ids": group.get("origin_ids", []),
+                "summary": summarize_text(merged_text, top_n=top_n),
+                "confidence_score": compute_summary_confidence(sentences, ranked, top_n=top_n),
+            }
+        )
+
+    return summaries
+
+
 def run_selected_approach(cleaned_rows: list[dict]) -> tuple[list[dict], dict[str, dict], dict]:
     if APPROACH_NAME == "approach_1_name_similarity":
         return build_groups_from_embeddings(
@@ -594,6 +745,8 @@ def main() -> None:
     cleaned_rows = build_cleaned_rows(structured_rows)
     groups, normalized_to_group, diagnostics = run_selected_approach(cleaned_rows)
     final_dataset = build_final_dataset(cleaned_rows, normalized_to_group)
+    merged_groups = build_merged_groups(final_dataset, origins)
+    group_summaries = build_group_summaries(merged_groups, top_n=SUMMARY_TOP_N)
 
     write_csv(
         output_dir / output_files["structured_csv"],
@@ -604,6 +757,8 @@ def main() -> None:
     write_json(output_dir / output_files["cleaned_json"], cleaned_rows)
     write_json(output_dir / output_files["groups_json"], groups)
     write_json(output_dir / output_files["final_json"], final_dataset)
+    write_json(output_dir / output_files["merged_groups_json"], merged_groups)
+    write_json(output_dir / output_files["summaries_json"], group_summaries)
     write_json(
         output_dir / output_files["metadata_json"],
         {
@@ -617,6 +772,7 @@ def main() -> None:
             "soundex_threshold": SOUNDEX_THRESHOLD,
             "spacy_similarity_threshold": SPACY_SIMILARITY_THRESHOLD,
             "batch_size": BATCH_SIZE,
+            "group_summary_sentence_count": SUMMARY_TOP_N,
             "diagnostics": diagnostics,
             "input_files": {
                 "names": str(DATA_DIR / "names.json"),
@@ -632,6 +788,8 @@ def main() -> None:
     print(f"Created {output_dir / output_files['cleaned_json']}")
     print(f"Created {output_dir / output_files['groups_json']}")
     print(f"Created {output_dir / output_files['final_json']}")
+    print(f"Created {output_dir / output_files['merged_groups_json']}")
+    print(f"Created {output_dir / output_files['summaries_json']}")
     print(f"Created {output_dir / output_files['metadata_json']}")
 
 

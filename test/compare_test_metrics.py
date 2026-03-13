@@ -20,6 +20,13 @@ APPROACH_OUTPUTS = {
     "approach_5_soundex": OUTPUTS_DIR / "05_soundex" / "final_dataset_soundex.json",
     "approach_6_spacy": OUTPUTS_DIR / "06_spacy" / "final_dataset_spacy.json",
 }
+DEFAULT_APPROACHES = [
+    "approach_2_name_and_context",
+    "approach_3_sequence_matcher",
+    "approach_4_levenshtein",
+    "approach_5_soundex",
+    "approach_6_spacy",
+]
 
 
 def load_json(path: Path):
@@ -546,11 +553,7 @@ def parse_args():
     parser.add_argument(
         "--approaches",
         nargs="+",
-        default=[
-            "approach_1_name_similarity",
-            "approach_3_sequence_matcher",
-            "approach_5_soundex",
-        ],
+        default=DEFAULT_APPROACHES,
         help="Approach names to compare.",
     )
     parser.add_argument(

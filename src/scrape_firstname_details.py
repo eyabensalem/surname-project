@@ -11,6 +11,7 @@ Step 2 of the first-name extension:
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List
@@ -25,6 +26,9 @@ from config import FIRSTNAMES_LIST_FILE, FIRSTNAMES_DATASET_FILE
 
 INPUT_FILE = FIRSTNAMES_LIST_FILE
 OUTPUT_FILE = FIRSTNAMES_DATASET_FILE
+DEFAULT_FIRSTNAME_DETAILS_LIMIT = 100
+
+
 def load_json(file_path: Path) -> Any:
     """Load JSON content."""
     with open(file_path, "r", encoding="utf-8") as file:
@@ -200,13 +204,12 @@ def parse_name_page(html: str, first_name: str, url: str) -> Dict[str, Any]:
         "description": clean_text(description),
         "quality_score": quality_score,
     }
-def is_valid_firstname_record(record: Dict[str, Any]) -> bool:
+def assess_firstname_record(record: Dict[str, Any]) -> tuple[bool, str]:
     """
-    Keep only records with enough useful information.
-    Reject generic search-like pages or surname-like entries.
+    Assess whether a record is strong enough for downstream use.
     """
     if record.get("error"):
-        return False
+        return False, "request_error"
 
     first_name = record.get("first_name", "").strip()
     title = record.get("title", "").strip().lower()
@@ -215,57 +218,74 @@ def is_valid_firstname_record(record: Dict[str, Any]) -> bool:
     description = record.get("description", "").strip().lower()
 
     if len(first_name) < 2:
-        return False
+        return False, "too_short"
 
-    # Reject generic search pages with no useful structured info
     if "recherche - origine nom" in title and not origin and not meaning:
-        return False
+        return False, "generic_search_page"
 
-    # Reject entries that explicitly say this is a surname
     if "nom de famille" in description:
-        return False
+        return False, "surname_page"
 
-    # Reject very weak records
     content_score = sum(bool(x) for x in [origin, meaning, description])
 
     if content_score == 0:
-        return False
+        return False, "empty_content"
 
     if len(description) < 60 and not origin and not meaning:
-        return False
+        return False, "weak_content"
 
-    return True
+    return True, "accepted"
 
-def scrape_firstname_details(firstnames: List[Dict[str, str]], limit: int = 10) -> List[Dict[str, Any]]:
+def scrape_firstname_details(
+    firstnames: List[Dict[str, str]],
+    limit: int | None = None,
+) -> List[Dict[str, Any]]:
     """
-    Scrape detail pages for the first N first names.
+    Scrape detail pages for all first names, or only the first N if a limit is provided.
     """
     results: List[Dict[str, Any]] = []
+    selected_firstnames = firstnames if limit is None else firstnames[:limit]
+    accepted_count = 0
+    low_quality_count = 0
+    error_count = 0
 
-    for item in firstnames[:limit]:
+    for item in selected_firstnames:
         first_name = item["first_name"]
         url = item["url"]
 
         try:
             html = fetch_page(url)
             parsed = parse_name_page(html, first_name, url)
+            is_valid, validation_note = assess_firstname_record(parsed)
+            parsed["record_status"] = "accepted" if is_valid else "low_quality"
+            parsed["validation_note"] = validation_note
+            results.append(parsed)
 
-            if is_valid_firstname_record(parsed):
-                results.append(parsed)
+            if is_valid:
+                accepted_count += 1
                 print(f"OK: {first_name}")
             else:
-                print(f"SKIPPED: {first_name} (insufficient content)")
+                low_quality_count += 1
+                print(f"LOW_QUALITY: {first_name} ({validation_note})")
         except Exception as error:
+            error_count += 1
             results.append(
                 {
                     "first_name": first_name,
                     "url": url,
                     "source": "OrigineNom",
+                    "record_status": "error",
+                    "validation_note": "request_error",
                     "error": str(error),
                 }
             )
             print(f"ERROR: {first_name} -> {error}")
 
+    print(
+        "Scraping summary: "
+        f"{accepted_count} accepted, {low_quality_count} low_quality, {error_count} errors "
+        f"out of {len(selected_firstnames)} pages visited."
+    )
     return results
 
 
@@ -273,9 +293,15 @@ def main() -> None:
     """Run firstname detail scraping."""
     print("Loading firstname list...")
     firstnames = load_json(INPUT_FILE)
+    limit_raw = os.getenv("FIRSTNAME_DETAILS_LIMIT", str(DEFAULT_FIRSTNAME_DETAILS_LIMIT)).strip()
+    limit = int(limit_raw) if limit_raw else None
 
-    print("Scraping firstname details...")
-    results = scrape_firstname_details(firstnames, limit=10)
+    if limit is None:
+        print(f"Scraping firstname details for all {len(firstnames)} first names...")
+    else:
+        print(f"Scraping firstname details for the first {min(limit, len(firstnames))} first names...")
+
+    results = scrape_firstname_details(firstnames, limit=limit)
 
     print("Saving results...")
     save_json(results, OUTPUT_FILE)
